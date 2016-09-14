@@ -18,11 +18,10 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="16" Height="Auto">
-            <TextBlock  FontSize="30"
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="30,0,0,40" Height="Auto">
+            <TextBlock  FontSize="20"
 					    Text="BILL OF MATERIALS CHECK"
                         Foreground="White"
-                        Margin="20"
                         VerticalAlignment="Center"/>
         </StackPanel>
 
@@ -50,6 +49,20 @@
               Grid.Row="4"
               Grid.ColumnSpan="2" />
         -->
-        
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="30,30,30,0" Height="Auto" HorizontalAlignment="Center">
+            <TextBlock FontSize="16" FontFamily="{StaticResource MaterialDesignFont}" Text="XLS DOC" Foreground="White" VerticalAlignment="Center"/>
+            <TextBox MaxLength="128" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+                     Width="300" Margin="10,0,0,20" VerticalAlignment="Center"/>
+            <Button Content="Open" Margin="10,0,0,10" Width="70" Height="30"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="30,30,30,0" Height="Auto" HorizontalAlignment="Center">
+            <TextBlock FontSize="16" FontFamily="{StaticResource MaterialDesignFont}" Text="CSV DOC" Foreground="White" VerticalAlignment="Center"/>
+            <TextBox MaxLength="128" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+                     Width="300" Margin="10,0,0,20" VerticalAlignment="Center"/>
+            <Button Content="Open" Margin="10,0,0,10" Width="70" Height="30"/>
+        </StackPanel>
+
     </Grid>
 </ContentControl>
