@@ -41,16 +41,6 @@ namespace BomRainB
             SideBarItems.Add(new SideBarItemVM("Bill of Materials Check",
                 PackIconKind.History, 
                 new RelayCommand(() => UpdateUI(new BOMCheck() { DataContext = new BOMCheckVM() }))));
-
-            /*SideBarItems.Add(new SideBarItemVM("Bill of Materials Check", PackIconKind.History,
-                new RelayCommand(() => UpdateUI(new Report() { DataContext = new ReportVM() }),
-                SecurityIdentifier.VIEWREPORTS)));
-            */
-            /*SideBarItems.Add(new SideBarItemVM("Clientes", PackIconKind.Tie,
-                new RelayCommand(() => UpdateUI(new ClientList() { DataContext = new ClientListVM() }),
-                SecurityIdentifier.VIEWCLIENTS)));
-            */
-
             SideBarItems[0].Command.Execute();
         }
 
