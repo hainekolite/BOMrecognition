@@ -39,7 +39,7 @@ namespace BomRainB
             SideBarItems = new ObservableCollection<SideBarItemVM>();
 
             SideBarItems.Add(new SideBarItemVM("Bill of Materials Check",
-                PackIconKind.History, 
+                PackIconKind.BookOpen, 
                 new RelayCommand(() => UpdateUI(new BOMCheck() { DataContext = new BOMCheckVM() }))));
             SideBarItems[0].Command.Execute();
         }

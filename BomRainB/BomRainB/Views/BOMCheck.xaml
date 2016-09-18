@@ -21,7 +21,7 @@
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="30,0,30,40" Height="Auto">
             <TextBlock  FontSize="20"
 					    Text="BILL OF MATERIALS CHECK"
-                        Foreground="White"
+                        Foreground="#004D40"
                         VerticalAlignment="Center"/>
         </StackPanel>
 
@@ -50,12 +50,25 @@
 
 
 
-        <Grid Grid.Row="1" Grid.Column="0" x:Name="TXTGrid" Margin="30,5,30,5" Background="White">
-        
+        <Grid Grid.Row="1" Grid.Column="0" x:Name="TXTGrid" Margin="30,5,30,5" Background="#004D40">
+            <DataGrid Margin="5"
+                      RowHeight="36"                      
+                      AutoGenerateColumns="False"
+                      HorizontalScrollBarVisibility="Visible"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserResizeColumns="False"
+                      CanUserResizeRows="False"
+                      CanUserReorderColumns="False"
+                      CanUserSortColumns="False"
+                      IsReadOnly="True"
+                      >
+                
+            </DataGrid>
         
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="1" x:Name="CVSGrid" Margin="30,5,30,5" Background="White">
+        <Grid Grid.Row="1" Grid.Column="1" x:Name="CVSGrid" Margin="30,5,30,5" Background="#004D40">
             <DataGrid Margin="5" ItemsSource="{Binding BomCSVList, Mode=OneWay}"
                       RowHeight="36"                      
                       AutoGenerateColumns="False"
@@ -123,7 +136,7 @@
                        Width="400" 
                        Margin="10,0,0,0" 
                        VerticalAlignment="Center"
-                       Foreground="White"
+                       Foreground="#004D40"
                        TextAlignment="Center"/>
 
             <Button Content="Open" Name="docTxtOpen" Command="{Binding SelectTxtFileDialogCommand}" Margin="10,0,0,5" Width="70" Height="30"/>
@@ -134,7 +147,7 @@
                        Width="400" 
                        Margin="10,0,0,0" 
                        VerticalAlignment="Center"
-                       Foreground="White"
+                       Foreground="#004D40"
                        TextAlignment="Center"/>
             <Button Content="Open" Name="docCsvOpen" Command="{Binding SelectCsvFileDialogCommand}" Margin="10,0,0,5" Width="70" Height="30"/>
         </StackPanel>

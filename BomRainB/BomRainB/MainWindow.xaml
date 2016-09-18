@@ -7,13 +7,14 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:BomRainB"
         mc:Ignorable="d"
-        Title="BOM RainBird" 
+        Title="RainBird - BOM Checker" 
+        Icon="favicon.ico"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal" 
         TextOptions.TextRenderingMode="Auto"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="#E0F2F1"
         FontFamily="{StaticResource MaterialDesignFont}"
         Height="768" MinHeight="768"
         Width="1366" MinWidth="1366">
@@ -34,7 +35,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <materialDesign:ColorZone Background="{DynamicResource PrimaryHueMidBrush}"
+            <materialDesign:ColorZone Background="#00695C"
                                       materialDesign:ShadowAssist.ShadowDepth="Depth2"
                                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <StackPanel>
@@ -49,7 +50,7 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="ToggleButton.IsMouseOver" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"/>
+                                            <Setter TargetName="Border" Property="Background" Value="#00BFA5"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -83,10 +84,10 @@
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsSelected" Value="True">
-                                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource PrimaryHueDarkBrush}"/>
+                                                    <Setter TargetName="Border" Property="Background" Value="#009688"/>
                                                 </Trigger>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"/>
+                                                    <Setter TargetName="Border" Property="Background" Value="#00BFA5"/>
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
