@@ -31,6 +31,8 @@ namespace BomRainB.ViewModel
 
         private Task BomThread;
         private Task AoiThread;
+        private Object bomLock;
+        private Object aoiLock;
 
         private string selectedFileTXT;
 
@@ -115,6 +117,9 @@ namespace BomRainB.ViewModel
 
             _selectTxtFileDialogCommand = new RelayCommand(GetTxtFile);
             _selectCsvFileDialogCommand = new RelayCommand(GetCsvFile);
+
+            bomLock = new object();
+            aoiLock = new object();
         }
 
         private void GetTxtFile()
@@ -163,16 +168,22 @@ namespace BomRainB.ViewModel
              {
                  bool isFileAvailable = true;
                  string[] rawCsvData;
-                 rawCsvData = ReadFile(documentCsv.FileName, out isFileAvailable);
-                 if (isFileAvailable)
+                 lock (bomLock)
                  {
-                     BomCSVList = GetBomInterestData(rawCsvData);
-                     if (BomCSVList != null)
-                         SelectedFileCSV = documentCsv.SafeFileName;
-                     else
-                         SelectedFileCSV = NO_FILES_SELECTED;
+                     rawCsvData = ReadFile(documentCsv.FileName, out isFileAvailable);
+                     if (isFileAvailable)
+                     {
+                         lock (bomLock)
+                         {
+                             BomCSVList = GetBomInterestData(rawCsvData);
+                             if (BomCSVList != null)
+                                 SelectedFileCSV = documentCsv.SafeFileName;
+                             else
+                                 SelectedFileCSV = NO_FILES_SELECTED;
+                         }
+                     }
+                     documentCsv.FileName = null;
                  }
-                 documentCsv.FileName = null;
              }));
         }
 
@@ -182,16 +193,19 @@ namespace BomRainB.ViewModel
              {
                  bool isFileAvailable = true;
                  string[] rawTxtData;
-                 rawTxtData = ReadFile(documentTxt.FileName, out isFileAvailable);
-                 if (isFileAvailable)
+                 lock (aoiLock)
                  {
-                     AoiTXTList = GetAoiInterestData(rawTxtData);
-                     if (AoiTXTList != null)
-                         SelectedFileTXT = documentTxt.SafeFileName;
-                     else
-                         SelectedFileCSV = NO_FILES_SELECTED;
+                     rawTxtData = ReadFile(documentTxt.FileName, out isFileAvailable);
+                     if (isFileAvailable)
+                     {
+                         AoiTXTList = GetAoiInterestData(rawTxtData);
+                         if (AoiTXTList != null)
+                             SelectedFileTXT = documentTxt.SafeFileName;
+                         else
+                             SelectedFileCSV = NO_FILES_SELECTED;
+                     }
+                     documentTxt.FileName = null;
                  }
-                 documentTxt.FileName = null;
              }));
         }
 
