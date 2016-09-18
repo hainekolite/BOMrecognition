@@ -30,11 +30,12 @@ namespace BomRainB.ViewModel
         private const char COLON = ',';
 
         private Task BomThread;
+        private Task AoiThread;
 
         private string selectedFileTXT;
 
-        private static string[] BomInterestHeaders = {"COMPONENTID", "REFERENCEDESIGNATORS"};
-        private static string[] AoiInterestHeaders = {"PARTNUMBER", "REFERENCEDESIGNATOR" };
+        private static string[] BomInterestHeaders = { "COMPONENTID", "REFERENCEDESIGNATORS" };
+        private static string[] AoiInterestHeaders = { "PARTNUMBER", "REFERENCEDESIGNATOR" };
 
         public string SelectedFileTXT
         {
@@ -118,41 +119,83 @@ namespace BomRainB.ViewModel
 
         private void GetTxtFile()
         {
-            bool isFileAvailable = true;
-            string[] rawTxtData;
-            documentTxt.ShowDialog();
-            if (!(string.IsNullOrEmpty(documentTxt.FileName)))
+            if (AoiThread != null)
             {
-                rawTxtData = ReadFile(documentTxt.FileName, out isFileAvailable);
-                if (isFileAvailable)
+                if (AoiThread.IsCompleted)
                 {
-                    AoiTXTList = GetAoiInterestData(rawTxtData);
-                    if (AoiTXTList != null)
-                        SelectedFileTXT = documentTxt.SafeFileName;
-                    else
-                        SelectedFileCSV = NO_FILES_SELECTED;
+                    documentTxt.ShowDialog();
+                    if (!(string.IsNullOrEmpty(documentTxt.FileName)))
+                        AoiThread = ProcessTxtFile();
                 }
             }
-        }
+            else
+            {
+                documentTxt.ShowDialog();
+                if (!(string.IsNullOrEmpty(documentTxt.FileName)))
+                    AoiThread = ProcessTxtFile();
+            }
+        }            
 
         private void GetCsvFile()
         {
-            bool isFileAvailable = true;
-            string[] rawCsvData;
-            documentCsv.ShowDialog();
-            if (!(string.IsNullOrEmpty(documentCsv.FileName)))
+            if (BomThread != null)
             {
-                rawCsvData = ReadFile(documentCsv.FileName, out isFileAvailable);
-                if (isFileAvailable)
+                if (BomThread.IsCompleted)
                 {
-                    BomCSVList = GetBomInterestData(rawCsvData);
-                    if (BomCSVList != null)
-                        SelectedFileCSV = documentCsv.SafeFileName;
-                    else
-                        SelectedFileCSV = NO_FILES_SELECTED;
-                }
+                    documentCsv.ShowDialog();
+                    if (!(string.IsNullOrEmpty(documentCsv.FileName)))
+                        BomThread = ProcessCsvFile();
+                }        
+            }
+            else
+            {
+                documentCsv.ShowDialog();
+                if (!(string.IsNullOrEmpty(documentCsv.FileName)))
+                    BomThread = ProcessCsvFile();
             }
         }
+
+        #region Task
+
+        private Task ProcessCsvFile()
+        {
+            return (Task.Run(() =>
+             {
+                 bool isFileAvailable = true;
+                 string[] rawCsvData;
+                 rawCsvData = ReadFile(documentCsv.FileName, out isFileAvailable);
+                 if (isFileAvailable)
+                 {
+                     BomCSVList = GetBomInterestData(rawCsvData);
+                     if (BomCSVList != null)
+                         SelectedFileCSV = documentCsv.SafeFileName;
+                     else
+                         SelectedFileCSV = NO_FILES_SELECTED;
+                 }
+                 documentCsv.FileName = null;
+             }));
+        }
+
+        private Task ProcessTxtFile()
+        {
+            return (Task.Run(() =>
+             {
+                 bool isFileAvailable = true;
+                 string[] rawTxtData;
+                 rawTxtData = ReadFile(documentTxt.FileName, out isFileAvailable);
+                 if (isFileAvailable)
+                 {
+                     AoiTXTList = GetAoiInterestData(rawTxtData);
+                     if (AoiTXTList != null)
+                         SelectedFileTXT = documentTxt.SafeFileName;
+                     else
+                         SelectedFileCSV = NO_FILES_SELECTED;
+                 }
+                 documentTxt.FileName = null;
+             }));
+        }
+
+        #endregion Task
 
         #region AOI-TXTRelated
         private List<AoiInterestData> GetAoiInterestData(string[] rawTxtData)
