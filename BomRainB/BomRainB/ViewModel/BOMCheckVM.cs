@@ -15,20 +15,27 @@ namespace BomRainB.ViewModel
 {
     public class BOMCheckVM : ViewModelBase
     {
+        #region Properties
         private OpenFileDialog documentTxt;
         private OpenFileDialog documentCsv;
-        private const string DIALOG_TXT_TITLE = "Select the AOL document in .txt format";
-        private const string DIALOG_CSV_TITLE = "Select the CSV document in .csv format";
+        private const string DIALOG_TXT_TITLE = "Select the AOI document in .txt format";
+        private const string DIALOG_CSV_TITLE = "Select the BOM document in .csv format";
         private const string NO_FILES_SELECTED = "Press the open button to Select a file";
         private const string FILE_NOT_AVIALABLE = "The file is being used by another process. The file path specified doesn't longer exist or the file has been deleted";
-        private const string COMPONENET_ID_REFERENCE_NOT_PRESENT = "The file does not contain a header with the legend Componenet ID or Reference Designator please check the file before the load";
+        private const string COMPONENET_ID_REFERENCE_NOT_PRESENT = "The file does not contain a header with the legend Componenet ID or Reference Designators please check the file before the load";
+        private const string PART_NUMBER_REFERENCE_NOT_PRESENT = "The file does not contain a header with the legend Part Number or Reference Designator please check the file before the load";
         private const string ERROR = "ERROR";
         private const char QUOTE_MARK_REPLACEMENT = '\'';
         private const char QUOTE_MARK = '"';
         private const char COLON = ',';
 
+        private Task BomThread;
+
         private string selectedFileTXT;
+
         private static string[] BomInterestHeaders = {"COMPONENTID", "REFERENCEDESIGNATORS"};
+        private static string[] AoiInterestHeaders = {"PARTNUMBER", "REFERENCEDESIGNATOR" };
+
         public string SelectedFileTXT
         {
             get
@@ -55,7 +62,7 @@ namespace BomRainB.ViewModel
             }
         }
 
-        public IEnumerable<BomInterestData> _bomCSVList;
+        private IEnumerable<BomInterestData> _bomCSVList;
         public IEnumerable<BomInterestData> BomCSVList
         {
             get
@@ -69,11 +76,26 @@ namespace BomRainB.ViewModel
             }
         }
 
+        private IEnumerable<AoiInterestData> _aoiTXTList;
+        public IEnumerable<AoiInterestData> AoiTXTList
+        {
+            get
+            {
+                return (_aoiTXTList);
+            }
+            set
+            {
+                _aoiTXTList = value;
+                OnPropertyChanged();
+            }
+        }
+
         private readonly RelayCommand _selectTxtFileDialogCommand;
         public RelayCommand SelectTxtFileDialogCommand => _selectTxtFileDialogCommand;
 
         private readonly RelayCommand _selectCsvFileDialogCommand;
         public RelayCommand SelectCsvFileDialogCommand => _selectCsvFileDialogCommand;
+        #endregion Properties
 
         public BOMCheckVM()
         {
@@ -96,24 +118,34 @@ namespace BomRainB.ViewModel
 
         private void GetTxtFile()
         {
+            bool isFileAvailable = true;
+            string[] rawTxtData;
             documentTxt.ShowDialog();
             if (!(string.IsNullOrEmpty(documentTxt.FileName)))
             {
-                SelectedFileTXT = documentTxt.SafeFileName;
+                rawTxtData = ReadFile(documentTxt.FileName, out isFileAvailable);
+                if (isFileAvailable)
+                {
+                    AoiTXTList = GetAoiInterestData(rawTxtData);
+                    if (AoiTXTList != null)
+                        SelectedFileTXT = documentTxt.SafeFileName;
+                    else
+                        SelectedFileCSV = NO_FILES_SELECTED;
+                }
             }
         }
 
         private void GetCsvFile()
         {
             bool isFileAvailable = true;
-            string[] rawCSVdata;
+            string[] rawCsvData;
             documentCsv.ShowDialog();
             if (!(string.IsNullOrEmpty(documentCsv.FileName)))
             {
-                rawCSVdata = ReadCSVFile(documentCsv.FileName, out isFileAvailable);
+                rawCsvData = ReadFile(documentCsv.FileName, out isFileAvailable);
                 if (isFileAvailable)
-                {                     
-                    BomCSVList = (GetBomInterestData(rawCSVdata));
+                {
+                    BomCSVList = GetBomInterestData(rawCsvData);
                     if (BomCSVList != null)
                         SelectedFileCSV = documentCsv.SafeFileName;
                     else
@@ -122,12 +154,38 @@ namespace BomRainB.ViewModel
             }
         }
 
+        #region AOI-TXTRelated
+        private List<AoiInterestData> GetAoiInterestData(string[] rawTxtData)
+        {
+            int[] offset = { -1, -1 };
+            bool flag = true;
+            bool isHeaderPresent = true;
+            string[] filteredTXTVData = GetFilteredData(rawTxtData, out isHeaderPresent, AoiInterestHeaders);
+            if (isHeaderPresent)
+            {
+                return filteredTXTVData.Select(line =>
+                {
+                    string[] data = line.Split(COLON);
+                    ReturnColons(data);
+                    if (flag)
+                        GetHeaderOffset(data, offset, out flag, AoiInterestHeaders);
+                    return (new AoiInterestData(data[offset[0]], data[offset[1]]));
+                }).ToList();
+            }
+            MessageBox.Show(PART_NUMBER_REFERENCE_NOT_PRESENT, ERROR);
+            return (null);
+        }
+
+        #endregion AOI-TXTRelated
+
+        #region BOM-CSVRelated
+
         private List<BomInterestData> GetBomInterestData(string[] csvRawData)
         {
             int[] offset = { -1, -1 };
             bool flag = true;
             bool isHeaderPresent = true;
-            string[] filteredCSVData = GetCSVFilteredData(csvRawData, out isHeaderPresent);
+            string[] filteredCSVData = GetFilteredData(csvRawData, out isHeaderPresent, BomInterestHeaders);
             if (isHeaderPresent)
             {
                 return filteredCSVData.Select(line =>
@@ -135,90 +193,18 @@ namespace BomRainB.ViewModel
                     string[] data = line.Split(COLON);
                     ReturnColons(data);
                     if (flag)
-                        GetOffset(data, offset, out flag);
+                        GetHeaderOffset(data, offset, out flag, BomInterestHeaders);
                     return (new BomInterestData(data[offset[0]], data[offset[1]]));
                 }).ToList();
             }
             MessageBox.Show(COMPONENET_ID_REFERENCE_NOT_PRESENT, ERROR);
             return (null);
         }
+        #endregion BOM-CSVRelated
 
-        private string[] ReturnColons(string[] lines)
-        {
-            for(int i=0; i<lines.Count(); i++)
-            {
-                if (lines[i].Contains(QUOTE_MARK_REPLACEMENT))
-                    lines[i] = lines[i].Replace(QUOTE_MARK_REPLACEMENT, COLON);
-            }
-            return (lines);
-        }
+        #region GeneralUse
 
-        private string[] GetCSVFilteredData(string[] csvRawData, out bool isHeaderPresent)
-        {
-            isHeaderPresent = true;
-            for (int i = 0; i < csvRawData.Count(); i++)
-            {
-                if (Regex.Replace(csvRawData[i], " ", "").ToUpper().Contains(BomInterestHeaders[0]) && Regex.Replace(csvRawData[i], " ", "").ToUpper().Contains(BomInterestHeaders[1]))
-                    return (ReplaceQuoteMarks(csvRawData.Skip(i).ToArray()));
-            }
-            isHeaderPresent = false;
-            return (null);
-        }
-
-        private void GetOffset(string[] data, int[] offset, out bool flag)
-        {
-            int i;
-            for (int j = 0; j<BomInterestHeaders.Count(); j++)
-            {
-                for (i = 0; i < data.Count(); i++)
-                {
-                    if (Regex.Replace(data[i], " ", "").ToUpper().Contains(BomInterestHeaders[j]))
-                        break;
-                }
-                offset[j] = i;
-            }
-            flag = false;
-        }
-
-        private string[] ReplaceQuoteMarks(string[] csvRawData)
-        {
-            int quoteCount = 0;
-            int[] index = { 0, 0 };
-            for (int i = 0; i < csvRawData.Count(); i++)
-            {
-                while(csvRawData[i].Contains(QUOTE_MARK))
-                {
-                    for (int j = 0; j < csvRawData[i].Length; j++)
-                    {
-                        if (csvRawData[i][j].Equals(QUOTE_MARK))
-                        {
-                            quoteCount++;
-                            index[quoteCount - 1] = j;
-                            if (quoteCount == 2)
-                            {
-                                quoteCount = 0;
-                                for (int z = index[0]; z < index[1]; z++)
-                                {
-                                    if (csvRawData[i][z].Equals(COLON))
-                                    {
-                                        StringBuilder sb = new StringBuilder(csvRawData[i].ToString());
-                                        sb[z] = QUOTE_MARK_REPLACEMENT;
-                                        csvRawData[i] = sb.ToString();
-                                    }      
-                                }
-                                csvRawData[i] = csvRawData[i].Remove(index[1], 1);
-                                csvRawData[i] = csvRawData[i].Remove(index[0], 1);
-                            }
-                        }
-                    }
-                    quoteCount = 0;
-                }
-            }
-            return (csvRawData);
-        }
-
-
-        private string[] ReadCSVFile(string path, out bool isFileAvailable )
+        private string[] ReadFile(string path, out bool isFileAvailable )
         {
             string[] fileLines;
             try
@@ -230,9 +216,84 @@ namespace BomRainB.ViewModel
             {
                 MessageBox.Show(FILE_NOT_AVIALABLE, ERROR);
                 isFileAvailable = false;
-                return (new string[] { "" });
+                return (null);
             }
         }
+
+        private string[] GetFilteredData(string[] rawData, out bool isHeaderPresent, string[] headers)
+        {
+            isHeaderPresent = true;
+            for (int i = 0; i < rawData.Count(); i++)
+            {
+                if (Regex.Replace(rawData[i], " ", "").ToUpper().Contains(headers[0]) && Regex.Replace(rawData[i], " ", "").ToUpper().Contains(headers[1]))
+                    return (ReplaceQuoteMarks(rawData.Skip(i).ToArray()));
+            }
+            isHeaderPresent = false;
+            return (null);
+        }
+
+        private void GetHeaderOffset(string[] data, int[] offset, out bool flag, string[] headers)
+        {
+            int i;
+            for (int j = 0; j < headers.Count(); j++)
+            {
+                for (i = 0; i < data.Count(); i++)
+                {
+                    if (Regex.Replace(data[i], " ", "").ToUpper().Contains(headers[j]))
+                        break;
+                }
+                offset[j] = i;
+            }
+            flag = false;
+        }
+
+        private string[] ReplaceQuoteMarks(string[] rawData)
+        {
+            int quoteCount = 0;
+            int[] index = { 0, 0 };
+            for (int i = 0; i < rawData.Count(); i++)
+            {
+                while (rawData[i].Contains(QUOTE_MARK))
+                {
+                    for (int j = 0; j < rawData[i].Length; j++)
+                    {
+                        if (rawData[i][j].Equals(QUOTE_MARK))
+                        {
+                            quoteCount++;
+                            index[quoteCount - 1] = j;
+                            if (quoteCount == 2)
+                            {
+                                quoteCount = 0;
+                                for (int z = index[0]; z < index[1]; z++)
+                                {
+                                    if (rawData[i][z].Equals(COLON))
+                                    {
+                                        StringBuilder sb = new StringBuilder(rawData[i].ToString());
+                                        sb[z] = QUOTE_MARK_REPLACEMENT;
+                                        rawData[i] = sb.ToString();
+                                    }
+                                }
+                                rawData[i] = rawData[i].Remove(index[1], 1);
+                                rawData[i] = rawData[i].Remove(index[0], 1);
+                            }
+                        }
+                    }
+                    quoteCount = 0;
+                }
+            }
+            return (rawData);
+        }
+
+        private void ReturnColons(string[] lines)
+        {
+            for (int i = 0; i < lines.Count(); i++)
+            {
+                if (lines[i].Contains(QUOTE_MARK_REPLACEMENT))
+                    lines[i] = lines[i].Replace(QUOTE_MARK_REPLACEMENT, COLON);
+            }            
+        }
+
+        #endregion GeneralUse
 
     }
 }

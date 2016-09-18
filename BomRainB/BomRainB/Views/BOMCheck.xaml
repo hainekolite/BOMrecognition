@@ -56,7 +56,8 @@
 
 
         <Grid Grid.Row="1" Grid.Column="0" x:Name="TXTGrid" Margin="30,5,30,5" Background="#004D40">
-            <DataGrid Margin="10"
+            <DataGrid Margin="10" ItemsSource="{Binding AoiTXTList, Mode=OneWay}"
+                      Background="#00897B"
                       RowHeight="36"                      
                       AutoGenerateColumns="False"
                       HorizontalScrollBarVisibility="Visible"
@@ -68,9 +69,32 @@
                       CanUserSortColumns="False"
                       IsReadOnly="True"
                       >
-                
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="HorizontalContentAlignment" Value="center"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Height" Value="36"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn MinWidth="64" Header="Part Number" Binding="{Binding partNumber, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn MinWidth="64" Header="Reference Designator" Binding="{Binding referenceDesignator, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
             </DataGrid>
-        
         </Grid>
 
         <Grid Grid.Row="1" Grid.Column="1" x:Name="CVSGrid" Margin="30,5,30,5" Background="#004D40">
