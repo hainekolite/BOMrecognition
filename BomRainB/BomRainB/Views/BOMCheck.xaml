@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:BomRainB.Views"
              mc:Ignorable="d" 
              d:DesignHeight="768" d:DesignWidth="1366">
@@ -27,9 +28,11 @@
 
         <Grid Grid.Column="1" Grid.Row="0" Margin="30,0,30,35" Height="Auto">
             <Button  Content="Validate Check" VerticalAlignment="Center" 
+                Style="{StaticResource MaterialDesignRaisedAccentButton}"
                 Foreground="White"
-                Background="DodgerBlue"
+                Background="#4DB6AC"
                 BorderBrush="Transparent"
+                BorderThickness="0"
                 HorizontalAlignment="Right"
                 Width="130"
                 Height="50"
@@ -37,9 +40,11 @@
             </Button>
 
             <Button  Content="Start Check" VerticalAlignment="Center" 
+                Style="{StaticResource MaterialDesignRaisedAccentButton}"
                 Foreground="White"
-                Background="DodgerBlue"
+                Background="#00695C"
                 BorderBrush="Transparent"
+                BorderThickness="0"
                 HorizontalAlignment="Right"
                 Width="120"
                 Height="50"
@@ -51,7 +56,7 @@
 
 
         <Grid Grid.Row="1" Grid.Column="0" x:Name="TXTGrid" Margin="30,5,30,5" Background="#004D40">
-            <DataGrid Margin="5"
+            <DataGrid Margin="10"
                       RowHeight="36"                      
                       AutoGenerateColumns="False"
                       HorizontalScrollBarVisibility="Visible"
@@ -69,7 +74,8 @@
         </Grid>
 
         <Grid Grid.Row="1" Grid.Column="1" x:Name="CVSGrid" Margin="30,5,30,5" Background="#004D40">
-            <DataGrid Margin="5" ItemsSource="{Binding BomCSVList, Mode=OneWay}"
+            <DataGrid Margin="10" ItemsSource="{Binding BomCSVList, Mode=OneWay}"
+                      Background="#00897B"
                       RowHeight="36"                      
                       AutoGenerateColumns="False"
                       HorizontalScrollBarVisibility="Visible"
@@ -139,7 +145,14 @@
                        Foreground="#004D40"
                        TextAlignment="Center"/>
 
-            <Button Content="Open" Name="docTxtOpen" Command="{Binding SelectTxtFileDialogCommand}" Margin="10,0,0,5" Width="70" Height="30"/>
+            <Button Content="Open" Name="docTxtOpen" 
+                    Command="{Binding SelectTxtFileDialogCommand}"
+                    Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                    Foreground="White"
+                    Background="#00695C"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Margin="10,0,0,5" Width="70" Height="30"/>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="30,30,30,0" Height="Auto" HorizontalAlignment="Center">
@@ -149,7 +162,14 @@
                        VerticalAlignment="Center"
                        Foreground="#004D40"
                        TextAlignment="Center"/>
-            <Button Content="Open" Name="docCsvOpen" Command="{Binding SelectCsvFileDialogCommand}" Margin="10,0,0,5" Width="70" Height="30"/>
+            <Button Content="Open" Name="docCsvOpen" 
+                    Command="{Binding SelectCsvFileDialogCommand}" 
+                    Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                    Foreground="White"
+                    Background="#00695C"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Margin="10,0,0,5" Width="70" Height="30"/>
         </StackPanel>
 
     </Grid>
