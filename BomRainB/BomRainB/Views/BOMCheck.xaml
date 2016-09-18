@@ -56,6 +56,44 @@
         </Grid>
 
         <Grid Grid.Row="1" Grid.Column="1" x:Name="CVSGrid" Margin="30,5,30,5" Background="White">
+            <DataGrid Margin="5" ItemsSource="{Binding BomCSVList, Mode=OneWay}"
+                      RowHeight="36"                      
+                      AutoGenerateColumns="False"
+                      HorizontalScrollBarVisibility="Visible"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserResizeColumns="False"
+                      CanUserResizeRows="False"
+                      CanUserReorderColumns="False"
+                      CanUserSortColumns="False"
+                      IsReadOnly="True"
+                      >
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="HorizontalContentAlignment" Value="center"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Height" Value="36"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                
+                <DataGrid.Columns>
+                    <DataGridTextColumn MinWidth="64" Header="Component ID" Binding="{Binding componentId, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    
+                    <DataGridTextColumn MinWidth="64" Header="Reference Designators" Binding="{Binding referenceDesignator, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
 
         <!--
