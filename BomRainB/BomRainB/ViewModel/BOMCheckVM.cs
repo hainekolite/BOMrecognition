@@ -80,6 +80,7 @@ namespace BomRainB.ViewModel
             }
         }
 
+        private ICollection<AoiInterestData> _memAoiTXTList;
         private ICollection<AoiInterestData> _aoiTXTList;
         public ICollection<AoiInterestData> AoiTXTList
         {
@@ -169,7 +170,10 @@ namespace BomRainB.ViewModel
                      {
                          AoiTXTList = GetAoiInterestData(rawTxtData);
                          if (AoiTXTList != null)
+                         {
                              SelectedFileTXT = documentTxt.SafeFileName;
+                             _memAoiTXTList = new List<AoiInterestData>(AoiTXTList);
+                         }
                          else
                              SelectedFileCSV = NO_FILES_SELECTED;
                      }
@@ -219,6 +223,7 @@ namespace BomRainB.ViewModel
                 }).ToList();
             }
             MessageBox.Show(PART_NUMBER_REFERENCE_NOT_PRESENT, ERROR);
+            _memBomCSVList = null;
             return (null);
         }
 
