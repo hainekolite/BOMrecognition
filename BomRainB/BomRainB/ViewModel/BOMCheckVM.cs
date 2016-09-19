@@ -65,8 +65,9 @@ namespace BomRainB.ViewModel
             }
         }
 
-        private IEnumerable<BomInterestData> _bomCSVList;
-        public IEnumerable<BomInterestData> BomCSVList
+        private ICollection<BomInterestData> _memBomCSVList;
+        private ICollection<BomInterestData> _bomCSVList;
+        public ICollection<BomInterestData> BomCSVList
         {
             get
             {
@@ -79,8 +80,8 @@ namespace BomRainB.ViewModel
             }
         }
 
-        private IEnumerable<AoiInterestData> _aoiTXTList;
-        public IEnumerable<AoiInterestData> AoiTXTList
+        private ICollection<AoiInterestData> _aoiTXTList;
+        public ICollection<AoiInterestData> AoiTXTList
         {
             get
             {
@@ -100,6 +101,7 @@ namespace BomRainB.ViewModel
         public RelayCommand SelectCsvFileDialogCommand => _selectCsvFileDialogCommand;
         #endregion Properties
 
+        #region Constructor
         public BOMCheckVM()
         {
             documentTxt = new OpenFileDialog();
@@ -121,44 +123,7 @@ namespace BomRainB.ViewModel
             bomLock = new object();
             aoiLock = new object();
         }
-
-        private void GetTxtFile()
-        {
-            if (AoiThread != null)
-            {
-                if (AoiThread.IsCompleted)
-                {
-                    documentTxt.ShowDialog();
-                    if (!(string.IsNullOrEmpty(documentTxt.FileName)))
-                        AoiThread = ProcessTxtFile();
-                }
-            }
-            else
-            {
-                documentTxt.ShowDialog();
-                if (!(string.IsNullOrEmpty(documentTxt.FileName)))
-                    AoiThread = ProcessTxtFile();
-            }
-        }            
-
-        private void GetCsvFile()
-        {
-            if (BomThread != null)
-            {
-                if (BomThread.IsCompleted)
-                {
-                    documentCsv.ShowDialog();
-                    if (!(string.IsNullOrEmpty(documentCsv.FileName)))
-                        BomThread = ProcessCsvFile();
-                }        
-            }
-            else
-            {
-                documentCsv.ShowDialog();
-                if (!(string.IsNullOrEmpty(documentCsv.FileName)))
-                    BomThread = ProcessCsvFile();
-            }
-        }
+        #endregion Constructor
 
         #region Task
 
@@ -177,7 +142,11 @@ namespace BomRainB.ViewModel
                          {
                              BomCSVList = GetBomInterestData(rawCsvData);
                              if (BomCSVList != null)
+                             {
                                  SelectedFileCSV = documentCsv.SafeFileName;
+                                 _memBomCSVList = new List<BomInterestData>(BomCSVList);
+                                 SplitReferences(_memBomCSVList);
+                             }
                              else
                                  SelectedFileCSV = NO_FILES_SELECTED;
                          }
@@ -212,6 +181,26 @@ namespace BomRainB.ViewModel
         #endregion Task
 
         #region AOI-TXTRelated
+
+        private void GetTxtFile()
+        {
+            if (AoiThread != null)
+            {
+                if (AoiThread.IsCompleted)
+                {
+                    documentTxt.ShowDialog();
+                    if (!(string.IsNullOrEmpty(documentTxt.FileName)))
+                        AoiThread = ProcessTxtFile();
+                }
+            }
+            else
+            {
+                documentTxt.ShowDialog();
+                if (!(string.IsNullOrEmpty(documentTxt.FileName)))
+                    AoiThread = ProcessTxtFile();
+            }
+        }
+
         private List<AoiInterestData> GetAoiInterestData(string[] rawTxtData)
         {
             int[] offset = { -1, -1 };
@@ -237,6 +226,25 @@ namespace BomRainB.ViewModel
 
         #region BOM-CSVRelated
 
+        private void GetCsvFile()
+        {
+            if (BomThread != null)
+            {
+                if (BomThread.IsCompleted)
+                {
+                    documentCsv.ShowDialog();
+                    if (!(string.IsNullOrEmpty(documentCsv.FileName)))
+                        BomThread = ProcessCsvFile();
+                }
+            }
+            else
+            {
+                documentCsv.ShowDialog();
+                if (!(string.IsNullOrEmpty(documentCsv.FileName)))
+                    BomThread = ProcessCsvFile();
+            }
+        }
+
         private List<BomInterestData> GetBomInterestData(string[] csvRawData)
         {
             int[] offset = { -1, -1 };
@@ -255,7 +263,77 @@ namespace BomRainB.ViewModel
                 }).ToList();
             }
             MessageBox.Show(COMPONENET_ID_REFERENCE_NOT_PRESENT, ERROR);
+            _memBomCSVList = null;
             return (null);
+        }
+
+        private void SplitReferences(ICollection<BomInterestData> BOMList)
+        {
+            string LeftNumber = string.Empty;
+            string RightNumber = string.Empty;
+            string letters = string.Empty;
+            string numbers = string.Empty;
+            int startIndex;
+            int endIndex;
+
+            int listCount = BOMList.Count;
+            string[] data;
+
+            int scoreIndex;
+
+            for (int i =0; i< listCount; i++)
+            {
+                data = Regex.Split(BOMList.ElementAt(i).referenceDesignator,",");
+
+                if (data.Count() > 1 || data[0].Contains("-")) //was there at least one ","
+                {
+                    for (int x = 0; x < data.Count(); x++)
+                    {
+                        if (data[x].Contains("-")) //It is a range string ?
+                        {
+                            scoreIndex = data[x].IndexOf("-");
+                            for (int y = 0; y<scoreIndex; y++)
+                            {
+                                if (char.IsNumber(data[x][y]))
+                                    LeftNumber += data[x][y];
+                                else
+                                    letters += data[x][y];
+                            }
+                            for (int z = (scoreIndex+1); z< data[x].Length; z++)
+                            {
+                                if (char.IsNumber(data[x][z]))
+                                    RightNumber += data[x][z];
+                            }
+                            Int32.TryParse(LeftNumber, out startIndex);
+                            Int32.TryParse(RightNumber, out endIndex);
+                            for (int w = startIndex; w< endIndex+1; w++)
+                            {
+                                BOMList.Add(new BomInterestData(BOMList.ElementAt(i).componentId, string.Format("{0}{1}", letters, w.ToString())));
+                            }
+                            LeftNumber = string.Empty;
+                            RightNumber = string.Empty;
+                            startIndex = 0;
+                            endIndex = 0;
+                        }
+                        else
+                        {
+                            for (int y = 0; y<data[x].Length; y++)
+                            {
+                                if (char.IsNumber(data[x][y]))
+                                    numbers += data[x][y];
+                                else
+                                    letters += data[x][y];
+                            }
+                            BOMList.Add(new BomInterestData(BOMList.ElementAt(i).componentId, string.Format("{0}{1}", letters, numbers)));
+                            numbers = string.Empty;
+                        }
+                    }
+                    BOMList.Remove(BOMList.ElementAt(i));
+                    i--;
+                    listCount--;
+                    letters = string.Empty;
+                }
+            }
         }
         #endregion BOM-CSVRelated
 
