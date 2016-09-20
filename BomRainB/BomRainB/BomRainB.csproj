@@ -72,12 +72,16 @@
     <Compile Include="ViewModel\Commands\ParameterCommand.cs" />
     <Compile Include="ViewModel\Commands\RelayCommand.cs" />
     <Compile Include="ViewModel\Controls\SideBarItemVM.cs" />
+    <Compile Include="ViewModel\DiferencesViewerVM.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="Views\BOMCheck.xaml.cs">
       <DependentUpon>BOMCheck.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Views\Converters\SideBarWidthConverter.cs" />
+    <Compile Include="Views\Dialogs\DiferencesViewer.xaml.cs">
+      <DependentUpon>DiferencesViewer.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -91,6 +95,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\BOMCheck.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Dialogs\DiferencesViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Resources\Dialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

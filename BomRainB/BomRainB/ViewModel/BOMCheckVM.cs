@@ -1,5 +1,7 @@
 ﻿using BomRainB.ModelHelpers;
 using BomRainB.ViewModel.Commands;
+using BomRainB.Views.Dialogs;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -24,6 +26,9 @@ namespace BomRainB.ViewModel
         private const string FILE_NOT_AVIALABLE = "The file is being used by another process. The file path specified doesn't longer exist or the file has been deleted";
         private const string COMPONENET_ID_REFERENCE_NOT_PRESENT = "The file does not contain a header with the legend Componenet ID or Reference Designators please check the file before the load";
         private const string PART_NUMBER_REFERENCE_NOT_PRESENT = "The file does not contain a header with the legend Part Number or Reference Designator please check the file before the load";
+        private const string DOT_EXTENSION_NOT_PRESENT = "Something went wrong, one or more files have not been loaded or one of your files doesn not contain the correct file extension .txt or .csv. Please check the files before start the check";
+        private const string FILE_NAMES_NOT_EQUAL = "Files names doesnt match each other. Please select the correct files to start the check process";
+        private const string FILE_ONLY_HAVE_HEADERS = "Something went wrong, the file only contains the headers, not data was indetified. Check your file please";
         private const string ERROR = "ERROR";
         private const char QUOTE_MARK_REPLACEMENT = '\'';
         private const char QUOTE_MARK = '"';
@@ -100,6 +105,10 @@ namespace BomRainB.ViewModel
 
         private readonly RelayCommand _selectCsvFileDialogCommand;
         public RelayCommand SelectCsvFileDialogCommand => _selectCsvFileDialogCommand;
+
+        private readonly RelayCommand _checkFilesCommand;
+        public RelayCommand CheckFilesCommand => _checkFilesCommand;
+
         #endregion Properties
 
         #region Constructor
@@ -120,11 +129,65 @@ namespace BomRainB.ViewModel
 
             _selectTxtFileDialogCommand = new RelayCommand(GetTxtFile);
             _selectCsvFileDialogCommand = new RelayCommand(GetCsvFile);
+            _checkFilesCommand = new RelayCommand(CheckBomVsAoi);
 
             bomLock = new object();
             aoiLock = new object();
         }
         #endregion Constructor
+
+        #region CheckRegion
+
+        private void CheckBomVsAoi()
+        {
+            string _selectedFileTXT = selectedFileTXT;
+            string _selectedFileCSV = selectedFileCSV;
+            if (_selectedFileTXT.Contains(".") && _selectedFileCSV.Contains("."))
+            {
+                _selectedFileCSV = RemoveDotExtension(_selectedFileCSV);
+                _selectedFileTXT = RemoveDotExtension(_selectedFileTXT);
+                if (!(string.IsNullOrEmpty(_selectedFileCSV) && string.IsNullOrEmpty(_selectedFileTXT)))
+                {
+                    if (_selectedFileCSV.Equals(_selectedFileTXT))
+                    {
+                        if (_memBomCSVList != null && _memAoiTXTList != null)
+                        {
+                            PerformCheck(_memBomCSVList, _memAoiTXTList);
+                        }
+                    }
+                    else
+                        MessageBox.Show(FILE_NAMES_NOT_EQUAL, ERROR);
+                }
+                else
+                    MessageBox.Show(DOT_EXTENSION_NOT_PRESENT, ERROR);
+            }
+            else
+                MessageBox.Show(DOT_EXTENSION_NOT_PRESENT, ERROR);
+        }
+
+        private void PerformCheck(ICollection<BomInterestData> _memBomCSVList, ICollection<AoiInterestData> _memAoiTXTList)
+        {
+            var aoiTempList = _memAoiTXTList.Select(y => new { y.partNumber, y.referenceDesignator }).Distinct().ToList();
+            var bomTempList = _memBomCSVList.Select(x => new { x.componentId, x.referenceDesignator }).Distinct().ToList();
+            ICollection<AoiInterestData> aoiCheckList = new List<AoiInterestData>();
+            ICollection<BomInterestData> bomCheckList = new List<BomInterestData>();
+
+            for (int i = 0; i < aoiTempList.Count; i++)
+            {
+                if (!(bomTempList.Contains(new { componentId = aoiTempList.ElementAt(i).partNumber, referenceDesignator = aoiTempList.ElementAt(i).referenceDesignator })))
+                    aoiCheckList.Add(new AoiInterestData(aoiTempList.ElementAt(i).partNumber, aoiTempList.ElementAt(i).referenceDesignator));
+            }
+            for (int i = 0; i < bomTempList.Count; i++)
+            {
+                if (!(aoiTempList.Contains(new { partNumber = bomTempList.ElementAt(i).componentId, referenceDesignator = bomTempList.ElementAt(i).referenceDesignator })))
+                    bomCheckList.Add(new BomInterestData(bomTempList.ElementAt(i).componentId, bomTempList.ElementAt(i).referenceDesignator));
+            }
+
+            DiferencesViewer dialogView = new DiferencesViewer() { DataContext = new DiferencesViewerVM(bomCheckList, aoiCheckList) };
+            DialogHost.Show(dialogView, "RootDialog");
+        }
+
+        #endregion CheckRegion 
 
         #region Task
 
@@ -144,9 +207,22 @@ namespace BomRainB.ViewModel
                              BomCSVList = GetBomInterestData(rawCsvData);
                              if (BomCSVList != null)
                              {
-                                 SelectedFileCSV = documentCsv.SafeFileName;
-                                 _memBomCSVList = new List<BomInterestData>(BomCSVList);
-                                 SplitReferences(_memBomCSVList);
+                                 DeleteHeaders(BomCSVList);
+                                 if (BomCSVList.Count > 1)
+                                 {
+                                     SelectedFileCSV = documentCsv.SafeFileName;
+                                     BomCSVList = BomCSVList.Skip(1).ToList();
+                                     _memBomCSVList = new List<BomInterestData>(BomCSVList);
+                                     SplitReferences(_memBomCSVList);
+                                     SpecialRanges(_memBomCSVList);
+                                 }
+                                 else
+                                 {
+                                     SelectedFileCSV = NO_FILES_SELECTED;
+                                     BomCSVList.Clear();
+                                     _memBomCSVList = null;
+                                     MessageBox.Show(FILE_ONLY_HAVE_HEADERS, ERROR);
+                                 }
                              }
                              else
                                  SelectedFileCSV = NO_FILES_SELECTED;
@@ -172,7 +248,19 @@ namespace BomRainB.ViewModel
                          if (AoiTXTList != null)
                          {
                              SelectedFileTXT = documentTxt.SafeFileName;
-                             _memAoiTXTList = new List<AoiInterestData>(AoiTXTList);
+                             DeleteHeaders(AoiTXTList);
+                             if (AoiTXTList.Count > 1)
+                             {
+                                 AoiTXTList = AoiTXTList.Skip(1).ToList();
+                                 _memAoiTXTList = new List<AoiInterestData>(AoiTXTList);
+                             }
+                             else
+                             {
+                                 AoiTXTList.Clear();
+                                 _memAoiTXTList = null;
+                                 SelectedFileTXT = NO_FILES_SELECTED;
+                                 MessageBox.Show(FILE_ONLY_HAVE_HEADERS, ERROR);
+                             }
                          }
                          else
                              SelectedFileCSV = NO_FILES_SELECTED;
@@ -286,9 +374,9 @@ namespace BomRainB.ViewModel
 
             int scoreIndex;
 
-            for (int i =0; i< listCount; i++)
+            for (int i = 0; i < listCount; i++)
             {
-                data = Regex.Split(BOMList.ElementAt(i).referenceDesignator,",");
+                data = Regex.Split(BOMList.ElementAt(i).referenceDesignator, ",");
 
                 if (data.Count() > 1 || data[0].Contains("-")) //was there at least one ","
                 {
@@ -297,21 +385,25 @@ namespace BomRainB.ViewModel
                         if (data[x].Contains("-")) //It is a range string ?
                         {
                             scoreIndex = data[x].IndexOf("-");
-                            for (int y = 0; y<scoreIndex; y++)
+                            for (int y = 0; y < scoreIndex; y++)
                             {
                                 if (char.IsNumber(data[x][y]))
                                     LeftNumber += data[x][y];
                                 else
-                                    letters += data[x][y];
+                                {
+                                    if (x == 0)
+                                        letters += data[x][y];
+                                }
+
                             }
-                            for (int z = (scoreIndex+1); z< data[x].Length; z++)
+                            for (int z = (scoreIndex + 1); z < data[x].Length; z++)
                             {
                                 if (char.IsNumber(data[x][z]))
                                     RightNumber += data[x][z];
                             }
                             Int32.TryParse(LeftNumber, out startIndex);
                             Int32.TryParse(RightNumber, out endIndex);
-                            for (int w = startIndex; w< endIndex+1; w++)
+                            for (int w = startIndex; w < endIndex + 1; w++)
                             {
                                 BOMList.Add(new BomInterestData(BOMList.ElementAt(i).componentId, string.Format("{0}{1}", letters, w.ToString())));
                             }
@@ -322,7 +414,7 @@ namespace BomRainB.ViewModel
                         }
                         else
                         {
-                            for (int y = 0; y<data[x].Length; y++)
+                            for (int y = 0; y < data[x].Length; y++)
                             {
                                 if (char.IsNumber(data[x][y]))
                                     numbers += data[x][y];
@@ -340,6 +432,21 @@ namespace BomRainB.ViewModel
                 }
             }
         }
+
+        private void SpecialRanges(ICollection<BomInterestData> BOMList)
+        {
+            for (int i =0; i< BOMList.Count; i++)
+            {
+                if (string.IsNullOrEmpty(BOMList.ElementAt(i).componentId.Trim()) && !string.IsNullOrEmpty(BOMList.ElementAt(i).referenceDesignator.Trim()) && i > 0)
+                {
+                    if (!string.IsNullOrEmpty(BOMList.ElementAt(i - 1).componentId))
+                    {
+                        BOMList.ElementAt(i).componentId = BOMList.ElementAt(i - 1).componentId;
+                    }
+                }
+            }
+        }
+
         #endregion BOM-CSVRelated
 
         #region GeneralUse
@@ -431,6 +538,45 @@ namespace BomRainB.ViewModel
                 if (lines[i].Contains(QUOTE_MARK_REPLACEMENT))
                     lines[i] = lines[i].Replace(QUOTE_MARK_REPLACEMENT, COLON);
             }            
+        }
+
+        private string RemoveDotExtension(string fileString)
+        {
+            for (int i = (fileString.Length-1); i >= 0; i--)
+            {
+                if (fileString.ElementAt(i).Equals('.'))
+                {
+                    fileString = fileString.Remove(fileString.Length - i, i);
+                    return (fileString);
+                }
+            }
+            return (string.Empty);
+        }
+
+        private void DeleteHeaders( ICollection<BomInterestData> bomList)
+        {
+            int listCount = bomList.Count;
+            for (int i =1; i< (listCount); i++)
+            {
+                if (bomList.ElementAt(i).componentId.Equals(bomList.ElementAt(0).componentId) && bomList.ElementAt(i).referenceDesignator.Equals(bomList.ElementAt(0).referenceDesignator)){
+                    bomList.Remove(bomList.ElementAt(i));
+                    i--;
+                    listCount--;
+                }
+            }
+        }
+
+        private void DeleteHeaders( ICollection<AoiInterestData> aoiList)
+        {
+            int listCount = aoiList.Count;
+            for (int i = 1; i < (listCount); i++)
+            {
+                if (aoiList.ElementAt(i).partNumber.Equals(aoiList.ElementAt(0).partNumber) && aoiList.ElementAt(i).referenceDesignator.Equals(aoiList.ElementAt(0).referenceDesignator)){
+                    aoiList.Remove(aoiList.ElementAt(i));
+                    i--;
+                    listCount--;
+                }
+            }
         }
 
         #endregion GeneralUse
