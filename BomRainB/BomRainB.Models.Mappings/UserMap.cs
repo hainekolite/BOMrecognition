@@ -22,7 +22,7 @@ namespace BomRainB.Models.Mappings
             this.Property(u => u.Password).IsRequired();
             this.Property(u => u.AccountType).IsRequired();
 
-            this.HasMany(u => u.UserRevisions);
+            this.HasMany(u => u.Revisions);
         }
     }
 }
