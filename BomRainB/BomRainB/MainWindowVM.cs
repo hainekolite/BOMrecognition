@@ -34,9 +34,30 @@ namespace BomRainB
             }
         }
 
+        private bool _canAccess;
+        public bool CanAccess
+        {
+            get
+            {
+                return (_canAccess);
+            }
+            set
+            {
+                _canAccess = value;
+                OnPropertyChanged();
+            }
+            
+        }
+
         private MainWindowVM()
         {
+            _canAccess = false;
+
             SideBarItems = new ObservableCollection<SideBarItemVM>();
+
+            SideBarItems.Add(new SideBarItemVM("Login",
+                PackIconKind.Account,
+                new RelayCommand(() => UpdateUI(new Login() { DataContext = new LoginVM(this) }))));
 
             SideBarItems.Add(new SideBarItemVM("Bill of Materials Check",
                 PackIconKind.BookOpen, 
