@@ -208,6 +208,7 @@ namespace BomRainB.ViewModel
                              if (BomCSVList != null)
                              {
                                  DeleteHeaders(BomCSVList);
+                                 DeleteBlankRowsCSV(BomCSVList);
                                  if (BomCSVList.Count > 1)
                                  {
                                      SelectedFileCSV = documentCsv.SafeFileName;
@@ -249,6 +250,7 @@ namespace BomRainB.ViewModel
                          {
                              SelectedFileTXT = documentTxt.SafeFileName;
                              DeleteHeaders(AoiTXTList);
+                             DelteBlankRowsTXT(AoiTXTList);
                              if (AoiTXTList.Count > 1)
                              {
                                  AoiTXTList = AoiTXTList.Skip(1).ToList();
@@ -307,7 +309,14 @@ namespace BomRainB.ViewModel
                     ReturnColons(data);
                     if (flag)
                         GetHeaderOffset(data, offset, out flag, AoiInterestHeaders);
-                    return (new AoiInterestData(data[offset[0]], data[offset[1]]));
+                    try
+                    {
+                        return (new AoiInterestData(data[offset[0]], data[offset[1]]));
+                    }
+                    catch(Exception e)
+                    {
+                        return (new AoiInterestData(" ", " "));
+                    }
                 }).ToList();
             }
             MessageBox.Show(PART_NUMBER_REFERENCE_NOT_PRESENT, ERROR);
@@ -352,7 +361,14 @@ namespace BomRainB.ViewModel
                     ReturnColons(data);
                     if (flag)
                         GetHeaderOffset(data, offset, out flag, BomInterestHeaders);
-                    return (new BomInterestData(data[offset[0]], data[offset[1]]));
+                    try
+                    {
+                        return (new BomInterestData(data[offset[0]], data[offset[1]]));
+                    }
+                    catch (Exception e)
+                    {
+                        return (new BomInterestData(" ", " "));
+                    }
                 }).ToList();
             }
             MessageBox.Show(COMPONENET_ID_REFERENCE_NOT_PRESENT, ERROR);
@@ -553,7 +569,35 @@ namespace BomRainB.ViewModel
             return (string.Empty);
         }
 
-        private void DeleteHeaders( ICollection<BomInterestData> bomList)
+        private void DeleteBlankRowsCSV(ICollection<BomInterestData> bomList)
+        {
+            int listCount = bomList.Count;
+            for (int i=0; i< listCount; i++)
+            {
+                if (string.IsNullOrEmpty(bomList.ElementAt(i).componentId.Trim()) && string.IsNullOrEmpty(bomList.ElementAt(i).referenceDesignator.Trim())){
+                    bomList.Remove(bomList.ElementAt(i));
+                    i--;
+                    listCount--;
+                }
+            }
+        }
+
+        private void DelteBlankRowsTXT(ICollection<AoiInterestData> aoiList)
+        {
+            int listCount = aoiList.Count;
+            for (int i = 0; i < listCount; i++)
+            {
+                if (string.IsNullOrEmpty(aoiList.ElementAt(i).partNumber.Trim()) && string.IsNullOrEmpty(aoiList.ElementAt(i).referenceDesignator.Trim()))
+                {
+                    aoiList.Remove(aoiList.ElementAt(i));
+                    i--;
+                    listCount--;
+                }
+            }
+        }
+
+
+        private void DeleteHeaders(ICollection<BomInterestData> bomList)
         {
             int listCount = bomList.Count;
             for (int i =1; i< (listCount); i++)
