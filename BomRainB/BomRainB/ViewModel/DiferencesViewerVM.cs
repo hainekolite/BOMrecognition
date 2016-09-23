@@ -61,7 +61,9 @@ namespace BomRainB.ViewModel
             _acceptDialogCommand = new RelayCommand(AcceptAction);
 
             this.bomCheckList = bomCheckList;
+            this.bomCheckList = bomCheckList.OrderBy(b => b.componentId).ToList();
             this.aoiCheckList = aoiCheckList;
+            this.aoiCheckList = aoiCheckList.OrderBy(a => a.partNumber).ToList();
         }
 
         private void AcceptAction() => DialogHost.CloseDialogCommand.Execute(true, null);
