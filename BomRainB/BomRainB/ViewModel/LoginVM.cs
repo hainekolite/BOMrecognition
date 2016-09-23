@@ -138,6 +138,7 @@ namespace BomRainB.ViewModel
                 PersonalInfo = string.Format("{0}{1} {2}", INFO, user.Name, user.LastName);
                 Account = string.Empty;
                 pass.Password = string.Empty;
+                this.mainWindowData.updatePermissions();
             }
             else
             {
@@ -150,14 +151,18 @@ namespace BomRainB.ViewModel
         {
             var pass = parameter as PasswordBox;
             pass.Password = string.Empty;
+            PersonalInfo = string.Empty;
+            Account = string.Empty;
             _password = pass.Password;
 
             this.mainWindowData.CanAccess = false;
+            this.mainWindowData.user.AccountType = 0;
+            this.mainWindowData.updatePermissions();
+            this.mainWindowData.user = null;
+
             CanLogInAccess = !this.mainWindowData.CanAccess;
             CanLogOutAccess = this.mainWindowData.CanAccess;
-            this.mainWindowData.user = null;
-            PersonalInfo = string.Empty;
-            Account = string.Empty;
+
         }
 
     }

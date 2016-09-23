@@ -55,7 +55,6 @@ namespace BomRainB
         private MainWindowVM()
         {
             _canAccess = false;
-
             SideBarItems = new ObservableCollection<SideBarItemVM>();
 
             SideBarItems.Add(new SideBarItemVM("Login",
@@ -64,11 +63,21 @@ namespace BomRainB
 
             SideBarItems.Add(new SideBarItemVM("Bill of Materials Check",
                 PackIconKind.BookOpen, 
-                new RelayCommand(() => UpdateUI(new BOMCheck() { DataContext = new BOMCheckVM(this.user) }))));
+                new RelayCommand(() => UpdateUI(new BOMCheck() { DataContext = new BOMCheckVM(this.user) }), (this.user == null? 0 : this.user.AccountType))));
             SideBarItems[0].Command.Execute();
         }
 
         public void UpdateUI(ContentControl view) => CurrentView = view;
+
+        public void updatePermissions()
+        {
+            if (SideBarItems.Count > 1)
+            {
+                for (int i = 1; i < SideBarItems.Count; i++)
+                    SideBarItems.ElementAt(i).Command.updateAccess(user.AccountType);
+            }
+            
+        }
 
     }
 }

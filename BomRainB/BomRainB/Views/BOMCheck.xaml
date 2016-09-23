@@ -45,6 +45,7 @@
         <Grid Grid.Column="1" Grid.Row="0" Margin="30,0,30,35" Height="Auto">
             <Button  Content="Validate AOI" VerticalAlignment="Center" 
                 Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                Command="{Binding ValidateAOIfileCommand}"
                 Foreground="White"
                 Background="#4DB6AC"
                 BorderBrush="Transparent"

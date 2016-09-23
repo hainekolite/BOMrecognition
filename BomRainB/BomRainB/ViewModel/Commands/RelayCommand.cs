@@ -7,19 +7,39 @@ using System.Windows.Input;
 
 namespace BomRainB.ViewModel.Commands
 {
-    public class RelayCommand : ICommand
+    public class RelayCommand : ViewModelBase, ICommand
     {
         private readonly Action action;
-        private readonly bool canAccess;
-        public bool CanAccess => canAccess;
+        private bool canAccess;
+        public bool CanAccess
+        {
+            get
+            {
+                return (canAccess);
+            }
+            set
+            {
+                canAccess = value;
+                OnPropertyChanged();
+            }
+        }
 
         public RelayCommand(Action action, int relayIdentifier)
         {
-            this.canAccess = true; //check for security singleton ?
-            if (this.canAccess)
-                this.action = action;
+            this.action = action;
+            if (relayIdentifier.Equals(1) && relayIdentifier != 0)
+                this.canAccess = true;            
             else
-                this.action = () => Console.WriteLine("Illegal command!");
+                this.canAccess = false;
+            
+        }
+
+        public void updateAccess(int relayIndetifier)
+        {
+            if (relayIndetifier.Equals(1) && relayIndetifier != 0)
+                CanAccess = true;
+            else
+                CanAccess = false;
         }
 
         public RelayCommand(Action action)
@@ -27,6 +47,7 @@ namespace BomRainB.ViewModel.Commands
             this.action = action;
             this.canAccess = true;
         }
+
 
         public bool CanExecute(object parameter = null) => canAccess;
 

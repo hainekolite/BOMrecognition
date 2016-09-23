@@ -25,7 +25,7 @@ namespace BomRainB.ViewModel
         private const string DIALOG_CSV_TITLE = "Select the BOM document in .csv format";
         private const string NO_FILES_SELECTED = "Press the open button to Select a file";
         private const string FILE_NOT_AVIALABLE = "The file is being used by another process. The file path specified doesn't longer exist or the file has been deleted";
-        private const string COMPONENET_ID_REFERENCE_NOT_PRESENT = "The file does not contain a header with the legend Componenet ID or Reference Designators please check the file before the load";
+        private const string COMPONENET_ID_REFERENCE_NOT_PRESENT = "The file does not contain a header with the legend Rev, Componenet ID or Reference Designators, check all the fields mentioned before.\n\rPlease check the file before the load";
         private const string PART_NUMBER_REFERENCE_NOT_PRESENT = "The file does not contain a header with the legend Part Number or Reference Designator please check the file before the load";
         private const string DOT_EXTENSION_NOT_PRESENT = "Something went wrong, one or more files have not been loaded or one of your files doesn not contain the correct file extension .txt or .csv. Please check the files before start the check";
         private const string FILE_NAMES_NOT_EQUAL = "Files names doesnt match each other. Please select the correct files to start the check process";
@@ -34,6 +34,7 @@ namespace BomRainB.ViewModel
         private const char QUOTE_MARK_REPLACEMENT = '\'';
         private const char QUOTE_MARK = '"';
         private const char COLON = ',';
+        private const string REVISION_QUOTE = "REV";
 
         private Task BomThread;
         private Task AoiThread;
@@ -70,6 +71,8 @@ namespace BomRainB.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        private string selectedRevisionVersion { get; set; }
 
         private ICollection<BomInterestData> _memBomCSVList;
         private ICollection<BomInterestData> _bomCSVList;
@@ -110,6 +113,9 @@ namespace BomRainB.ViewModel
         private readonly RelayCommand _checkFilesCommand;
         public RelayCommand CheckFilesCommand => _checkFilesCommand;
 
+        private readonly RelayCommand _validateAOIfileCommand;
+        public RelayCommand ValidateAOIfileCommand => _validateAOIfileCommand;
+
         private readonly User user;
 
         #endregion Properties
@@ -129,11 +135,12 @@ namespace BomRainB.ViewModel
 
             selectedFileTXT = NO_FILES_SELECTED;
             selectedFileCSV = NO_FILES_SELECTED;
+            selectedRevisionVersion = string.Empty;
 
             _selectTxtFileDialogCommand = new RelayCommand(GetTxtFile);
             _selectCsvFileDialogCommand = new RelayCommand(GetCsvFile);
             _checkFilesCommand = new RelayCommand(CheckBomVsAoi);
-
+            _validateAOIfileCommand = new RelayCommand(ValidateAOIFile);
             user = mainWindowUser;
 
             bomLock = new object();
@@ -141,6 +148,43 @@ namespace BomRainB.ViewModel
 
         }
         #endregion Constructor
+
+        #region Validate-AOI-FIle
+
+        private void ValidateAOIFile()
+        {
+            string _selectedFileTXT = selectedFileTXT;
+            string _selectedFileCSV = selectedFileCSV;
+            if (_selectedFileTXT.Contains(".") && _selectedFileCSV.Contains("."))
+            {
+                _selectedFileCSV = RemoveDotExtension(_selectedFileCSV);
+                _selectedFileTXT = RemoveDotExtension(_selectedFileTXT);
+                if (!(string.IsNullOrEmpty(_selectedFileCSV) && string.IsNullOrEmpty(_selectedFileTXT)))
+                {
+                    if (_selectedFileCSV.Equals(_selectedFileTXT))
+                    {
+                        if (_memBomCSVList != null && _memAoiTXTList != null)
+                        {
+                            InsertValidation();
+                        }
+                    }
+                    else
+                        MessageBox.Show(FILE_NAMES_NOT_EQUAL, ERROR);
+                }
+                else
+                    MessageBox.Show(DOT_EXTENSION_NOT_PRESENT, ERROR);
+            }
+            else
+                MessageBox.Show(DOT_EXTENSION_NOT_PRESENT, ERROR);
+        }
+
+        private async void InsertValidation()
+        {
+            ValidateAOI dialogView = new ValidateAOI() { DataContext = new ValidateAOIVM() };
+            await(DialogHost.Show(dialogView, "RootDialog"));
+        }
+
+        #endregion Validate-AOI-FIle
 
         #region CheckRegion
 
@@ -171,7 +215,7 @@ namespace BomRainB.ViewModel
                 MessageBox.Show(DOT_EXTENSION_NOT_PRESENT, ERROR);
         }
 
-        private void PerformCheck(ICollection<BomInterestData> _memBomCSVList, ICollection<AoiInterestData> _memAoiTXTList)
+        private async void PerformCheck(ICollection<BomInterestData> _memBomCSVList, ICollection<AoiInterestData> _memAoiTXTList)
         {
             var aoiTempList = _memAoiTXTList.Select(y => new { y.partNumber, y.referenceDesignator }).Distinct().ToList();
             var bomTempList = _memBomCSVList.Select(x => new { x.componentId, x.referenceDesignator }).Distinct().ToList();
@@ -190,7 +234,7 @@ namespace BomRainB.ViewModel
             }
 
             DiferencesViewer dialogView = new DiferencesViewer() { DataContext = new DiferencesViewerVM(bomCheckList, aoiCheckList) };
-            DialogHost.Show(dialogView, "RootDialog");
+            await (DialogHost.Show(dialogView, "RootDialog"));
         }
 
         #endregion CheckRegion 
@@ -228,6 +272,7 @@ namespace BomRainB.ViewModel
                                      SelectedFileCSV = NO_FILES_SELECTED;
                                      BomCSVList.Clear();
                                      _memBomCSVList = null;
+                                     selectedRevisionVersion = string.Empty;
                                      MessageBox.Show(FILE_ONLY_HAVE_HEADERS, ERROR);
                                  }
                              }
@@ -358,8 +403,12 @@ namespace BomRainB.ViewModel
             int[] offset = { -1, -1 };
             bool flag = true;
             bool isHeaderPresent = true;
+            bool isRevisionPresent = true;
             string[] filteredCSVData = GetFilteredData(csvRawData, out isHeaderPresent, BomInterestHeaders);
-            if (isHeaderPresent)
+            selectedRevisionVersion = CheckForRevisionHeader(csvRawData, out isRevisionPresent);
+            if (isRevisionPresent)
+                selectedRevisionVersion = GetRevisionString(selectedRevisionVersion, out isRevisionPresent);
+            if (isHeaderPresent && isRevisionPresent)
             {
                 return filteredCSVData.Select(line =>
                 {
@@ -379,6 +428,7 @@ namespace BomRainB.ViewModel
             }
             MessageBox.Show(COMPONENET_ID_REFERENCE_NOT_PRESENT, ERROR);
             _memBomCSVList = null;
+            selectedRevisionVersion = string.Empty;
             return (null);
         }
 
@@ -469,6 +519,22 @@ namespace BomRainB.ViewModel
             }
         }
 
+        private string CheckForRevisionHeader(string[] rawData, out bool isRevisionPresent)
+        {
+            string revisionVer = string.Empty;
+            isRevisionPresent = true;
+            for (int i = 0; i < rawData.Count(); i++)
+            {
+                if (Regex.Replace(rawData[i], " ", "").ToUpper().Contains(REVISION_QUOTE))
+                {
+                    return (revisionVer = rawData.ElementAt(i));
+                }   
+            }
+            isRevisionPresent = false;
+            return (null);
+        }
+
+
         #endregion BOM-CSVRelated
 
         #region GeneralUse
@@ -514,6 +580,36 @@ namespace BomRainB.ViewModel
                 offset[j] = i;
             }
             flag = false;
+        }
+
+        private string GetRevisionString(string revLine, out bool isRevisionPresent)
+        {
+            string[] data = Regex.Split(revLine,",");
+            for (int i = 0; i<data.Count(); i++)
+            {
+                if (Regex.Replace(data[i], " ", "").ToUpper().Equals(REVISION_QUOTE))
+                {
+                    try
+                    {
+                        isRevisionPresent = true;
+                        if (!(string.IsNullOrEmpty(data[i + 1])))
+                            return (data[i + 1]);
+                        else
+                        {
+                            isRevisionPresent = false;
+                            return (null);
+                        }
+                            
+                    }
+                    catch (Exception e)
+                    {
+                        isRevisionPresent = false;
+                        return (null);
+                    }
+                }
+            }
+            isRevisionPresent = false;
+            return (null);
         }
 
         private string[] ReplaceQuoteMarks(string[] rawData)

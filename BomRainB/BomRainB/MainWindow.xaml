@@ -75,7 +75,7 @@
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="Height" Value="48"/>
                                 <Setter Property="ToolTip" Value="{Binding Text}"/>
-                                <Setter Property="Visibility" Value="{Binding Command.CanAccess, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                <Setter Property="Visibility" Value="{Binding Command.CanAccess, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="ListBoxItem">

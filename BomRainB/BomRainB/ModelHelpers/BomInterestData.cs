@@ -10,7 +10,7 @@ namespace BomRainB.ModelHelpers
     {
         public string componentId { get; set; }
         public string referenceDesignator { get; set; }
-
+        
         public BomInterestData(string componentId, string referenceDesignator)
         {
             this.componentId = componentId;
