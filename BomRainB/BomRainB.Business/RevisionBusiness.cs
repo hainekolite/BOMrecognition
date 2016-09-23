@@ -22,6 +22,11 @@ namespace BomRainB.Business
             return unitOfWork.RevisionRepository.GetList();
         }
 
+        public IQueryable<Revision> GetAllByIQueryable()
+        {
+            return (unitOfWork.RevisionRepository.GetQuery());
+        }
+
         public void InsertRevision(User user, string documentName, string revisionVersion)
         {
             Revision rev = new Revision()

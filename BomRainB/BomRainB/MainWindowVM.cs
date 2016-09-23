@@ -58,12 +58,17 @@ namespace BomRainB
             SideBarItems = new ObservableCollection<SideBarItemVM>();
 
             SideBarItems.Add(new SideBarItemVM("Login",
-                PackIconKind.Account,
+                PackIconKind.AccountBox,
                 new RelayCommand(() => UpdateUI(new Login() { DataContext = new LoginVM(this) }))));
 
             SideBarItems.Add(new SideBarItemVM("Bill of Materials Check",
                 PackIconKind.BookOpen, 
                 new RelayCommand(() => UpdateUI(new BOMCheck() { DataContext = new BOMCheckVM(this.user) }), (this.user == null? 0 : this.user.AccountType))));
+
+            SideBarItems.Add( new SideBarItemVM("Reports", 
+                PackIconKind.LibraryBooks,
+                new RelayCommand(() => UpdateUI(new RevisionReport() { DataContext = new RevisionReportVM(this.user) }))));
+
             SideBarItems[0].Command.Execute();
         }
 
@@ -73,8 +78,8 @@ namespace BomRainB
         {
             if (SideBarItems.Count > 1)
             {
-                for (int i = 1; i < SideBarItems.Count; i++)
-                    SideBarItems.ElementAt(i).Command.updateAccess(user.AccountType);
+                //for (int i = 1; i < SideBarItems.Count; i++)
+                    SideBarItems.ElementAt(1).Command.updateAccess(user.AccountType);
             }
             
         }

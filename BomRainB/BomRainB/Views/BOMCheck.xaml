@@ -21,7 +21,8 @@
 
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="30,0,30,40" Height="Auto">
             <TextBlock  FontSize="20"
-					    Text="BILL OF MATERIALS CHECK"
+					    Text="Bill of materials - Check"
+                        FontFamily="{StaticResource MaterialDesignFont}"
                         Foreground="#004D40"
                         VerticalAlignment="Center"/>
         </StackPanel>
