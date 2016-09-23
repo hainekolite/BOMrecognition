@@ -100,7 +100,7 @@
                        VerticalAlignment="Center"
                        Margin="0,0,100,0"/>
 
-                <PasswordBox Grid.Column="1" Grid.Row="1" Margin="40,20,180,40"
+                <PasswordBox Name="PassBox" Grid.Column="1" Grid.Row="1" Margin="40,20,180,40"
                              MaxLength="15"
                              FontSize="30"
                              Foreground="White"
@@ -109,6 +109,7 @@
                 <Button Grid.Column="1" Grid.Row="2" Content="Log Out" VerticalAlignment="Center" 
                     Style="{StaticResource MaterialDesignRaisedAccentButton}"
                     Command="{Binding LogOutAccessCommand}"
+                    CommandParameter="{Binding ElementName=PassBox}"
                     Visibility="{Binding CanLogOutAccess, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}}"
                     Foreground="White"
                     Background="#D32F2F"
@@ -124,6 +125,7 @@
                 <Button Grid.Column="1" Grid.Row="2" Content="Log In" VerticalAlignment="Center" 
                     Style="{StaticResource MaterialDesignRaisedAccentButton}"
                     Command="{Binding LogInAccessCommand}"
+                    CommandParameter="{Binding ElementName=PassBox}"
                     Visibility="{Binding CanLogInAccess, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}}"
                     Foreground="White"
                     Background="#00695C"

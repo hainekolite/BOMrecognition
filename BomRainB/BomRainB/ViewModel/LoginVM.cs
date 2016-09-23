@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace BomRainB.ViewModel
 {
@@ -14,12 +15,14 @@ namespace BomRainB.ViewModel
     {
 
         private const string INFO = "Currently logged as: ";
+        private const string LOG_IN_FAILED = "User account or password are incorrect";
 
-        public readonly RelayCommand _logInAccessCommand;
-        public RelayCommand LogInAccessCommand => _logInAccessCommand;
+        private readonly ParameterCommand _logOutAccessCommand;
+        public ParameterCommand LogOutAccessCommand => _logOutAccessCommand;
 
-        private readonly RelayCommand _logOutAccessCommand;
-        public RelayCommand LogOutAccessCommand => _logOutAccessCommand;
+        private readonly ParameterCommand _logInAccessCommand;
+        public ParameterCommand LogInAccessCommand => _logInAccessCommand;
+        
 
         private bool _canLogOutAccess;
         public bool CanLogOutAccess
@@ -61,8 +64,19 @@ namespace BomRainB.ViewModel
             }
             set
             {
-                _account = value;
-                OnPropertyChanged();
+                if (value.Length >= 1)
+                {
+                    if (regex.IsMatch(value.ElementAt(value.Length-1).ToString()))
+                    {
+                        _account = value;
+                        OnPropertyChanged();
+                    }
+                }
+                else if (value.Equals(string.Empty))
+                {
+                    _account = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -82,7 +96,7 @@ namespace BomRainB.ViewModel
             }
         }
 
-        private Regex regex;
+        private Regex regex { get; set; }
         private UserBusiness userBusiness;
         private User user;
 
@@ -94,8 +108,8 @@ namespace BomRainB.ViewModel
             CanLogInAccess = !this.mainWindowData.CanAccess;
             CanLogOutAccess = this.mainWindowData.CanAccess;
 
-            _logInAccessCommand = new RelayCommand(LogInAction);
-            _logOutAccessCommand = new RelayCommand(LogOutAction);
+            _logInAccessCommand = new ParameterCommand(LogInAction);
+            _logOutAccessCommand = new ParameterCommand(LogOutAction);
             
             if (mainWindowData.CanAccess)
             {
@@ -103,12 +117,17 @@ namespace BomRainB.ViewModel
                 PersonalInfo = string.Format("{0}{1} {2}", INFO, user.Name, user.LastName);
             }
 
+            regex = new Regex(@"^[a-zA-Z0-9]?$");
+
             _account = string.Empty;
         }
 
-        private void LogInAction()
+        private void LogInAction(object parameter)
         {
-            var usersQuery = userBusiness.GetAll().Where(u => u.AccountName == Account).FirstOrDefault();
+            var pass = parameter as PasswordBox;
+            _password = pass.Password;
+            var usersQuery = userBusiness.GetUserByAccountPasswordByIQueryable(Account,_password).FirstOrDefault();
+           
             if (usersQuery != null)
             {
                 this.mainWindowData.CanAccess = true;
@@ -118,11 +137,21 @@ namespace BomRainB.ViewModel
                 user = this.mainWindowData.user;
                 PersonalInfo = string.Format("{0}{1} {2}", INFO, user.Name, user.LastName);
                 Account = string.Empty;
+                pass.Password = string.Empty;
+            }
+            else
+            {
+                this.mainWindowData.CanAccess = false;
+                PersonalInfo = string.Format("{0}", LOG_IN_FAILED);
             }   
         }
 
-        private void LogOutAction()
+        private void LogOutAction(object parameter)
         {
+            var pass = parameter as PasswordBox;
+            pass.Password = string.Empty;
+            _password = pass.Password;
+
             this.mainWindowData.CanAccess = false;
             CanLogInAccess = !this.mainWindowData.CanAccess;
             CanLogOutAccess = this.mainWindowData.CanAccess;

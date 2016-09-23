@@ -10,7 +10,7 @@ namespace BomRainB.Business
 {
     public class UserBusiness
     {
-        public UnitOfWork unitOfWork;
+        UnitOfWork unitOfWork;
 
         public UserBusiness()
         {
@@ -21,5 +21,16 @@ namespace BomRainB.Business
         {
             return unitOfWork.UserRepository.GetList();
         }
+
+        public IQueryable<User> GetAllUserByIQueryable()
+        {
+            return (unitOfWork.UserRepository.GetQuery());
+        }
+
+        public IEnumerable<User> GetUserByAccountPasswordByIQueryable(string account, string password)
+        {
+            return (GetAllUserByIQueryable().Where(u => u.AccountName == account && u.Password == password).ToList());
+        }
+        
     }
 }
