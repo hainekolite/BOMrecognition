@@ -59,7 +59,7 @@
                     </StackPanel>
 
                     <ListBox ItemsSource="{Binding SideBarItems, Mode=OneTime}" PreviewMouseLeftButtonUp="ItemsControlClicked"
-                             HorizontalContentAlignment="Stretch" x:Name="MenuList" SelectedIndex="0">
+                             HorizontalContentAlignment="Stretch" x:Name="MenuList" SelectedIndex="0" IsEnabled="{Binding CanAccess}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="13" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

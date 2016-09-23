@@ -2,11 +2,21 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:BomRainB.Views.Converters"
              xmlns:local="clr-namespace:BomRainB.Views"
              mc:Ignorable="d" 
              d:DesignHeight="768" d:DesignWidth="1366">
+
+    <ContentControl.Resources>
+        <ResourceDictionary>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        </ResourceDictionary>
+    </ContentControl.Resources>
+
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -70,12 +80,14 @@
                        VerticalAlignment="Center"
                        Margin="0,0,100,0"/>
 
-                <TextBox Grid.Column="1" Grid.Row="0" Margin="40,20,180,40"
+                <TextBox Grid.Column="1" Grid.Row="0" Margin="40,20,180,40" x:Name="AccountTextBox"
                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                     MaxLength="100"
+                     MaxLength="15"
                      FontSize="30"
                      Foreground="White"
-                     />
+                     Text="{Binding Account, UpdateSourceTrigger=PropertyChanged}">
+
+                </TextBox>
 
 
                 <TextBlock Grid.Column="0" Grid.Row="1"
@@ -89,14 +101,30 @@
                        Margin="0,0,100,0"/>
 
                 <PasswordBox Grid.Column="1" Grid.Row="1" Margin="40,20,180,40"
-                             MaxLength="100"
+                             MaxLength="15"
                              FontSize="30"
                              Foreground="White"
                              />
 
+                <Button Grid.Column="1" Grid.Row="2" Content="Log Out" VerticalAlignment="Center" 
+                    Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                    Command="{Binding LogOutAccessCommand}"
+                    Visibility="{Binding CanLogOutAccess, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Foreground="White"
+                    Background="#D32F2F"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    FontSize="20"
+                    HorizontalAlignment="Right"
+                    Width="150"
+                    Height="70"
+                    Margin="0,10,180,10">
+                </Button>
+                
                 <Button Grid.Column="1" Grid.Row="2" Content="Log In" VerticalAlignment="Center" 
                     Style="{StaticResource MaterialDesignRaisedAccentButton}"
-                    Command="{Binding LogInAccessCommand}" 
+                    Command="{Binding LogInAccessCommand}"
+                    Visibility="{Binding CanLogInAccess, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}}"
                     Foreground="White"
                     Background="#00695C"
                     BorderBrush="Transparent"
@@ -107,6 +135,16 @@
                     Height="70"
                     Margin="0,10,180,10">
                 </Button>
+
+                <TextBlock Grid.Column="0" Grid.Row="2"
+                       FontFamily="{StaticResource MaterialDesignFont}"
+                       Text="{Binding PersonalInfo}"
+                       Foreground="White"
+                       FontSize="14"
+                       LineStackingStrategy="BlockLineHeight"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Margin="0,0,100,0"/>
 
             </Grid>
         </Border>

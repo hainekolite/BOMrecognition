@@ -10,7 +10,7 @@ namespace BomRainB.Business
 {
     public class UserBusiness
     {
-        UnitOfWork unitOfWork;
+        public UnitOfWork unitOfWork;
 
         public UserBusiness()
         {

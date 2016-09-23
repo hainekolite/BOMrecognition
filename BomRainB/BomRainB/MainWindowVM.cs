@@ -1,4 +1,5 @@
-﻿using BomRainB.ViewModel;
+﻿using BomRainB.Models;
+using BomRainB.ViewModel;
 using BomRainB.ViewModel.Commands;
 using BomRainB.ViewModel.Controls;
 using BomRainB.Views;
@@ -45,9 +46,11 @@ namespace BomRainB
             {
                 _canAccess = value;
                 OnPropertyChanged();
-            }
-            
+            }    
         }
+
+        public User user { get; set; }
+        private Revision revision { get; set; }
 
         private MainWindowVM()
         {
