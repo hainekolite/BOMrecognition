@@ -1,4 +1,5 @@
 ﻿using BomRainB.ModelHelpers;
+using BomRainB.Models;
 using BomRainB.ViewModel.Commands;
 using BomRainB.Views.Dialogs;
 using MaterialDesignThemes.Wpf;
@@ -109,10 +110,12 @@ namespace BomRainB.ViewModel
         private readonly RelayCommand _checkFilesCommand;
         public RelayCommand CheckFilesCommand => _checkFilesCommand;
 
+        private readonly User user;
+
         #endregion Properties
 
         #region Constructor
-        public BOMCheckVM()
+        public BOMCheckVM(User mainWindowUser)
         {
             documentTxt = new OpenFileDialog();
             documentTxt.Multiselect = false;
@@ -131,8 +134,11 @@ namespace BomRainB.ViewModel
             _selectCsvFileDialogCommand = new RelayCommand(GetCsvFile);
             _checkFilesCommand = new RelayCommand(CheckBomVsAoi);
 
+            user = mainWindowUser;
+
             bomLock = new object();
             aoiLock = new object();
+
         }
         #endregion Constructor
 
