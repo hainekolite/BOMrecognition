@@ -1,4 +1,5 @@
-﻿using BomRainB.ModelHelpers;
+﻿using BomRainB.Business;
+using BomRainB.ModelHelpers;
 using BomRainB.Models;
 using BomRainB.ViewModel.Commands;
 using BomRainB.Views.Dialogs;
@@ -117,6 +118,7 @@ namespace BomRainB.ViewModel
         public RelayCommand ValidateAOIfileCommand => _validateAOIfileCommand;
 
         private readonly User user;
+        private readonly RevisionBusiness revisionBusiness;
 
         #endregion Properties
 
@@ -142,6 +144,7 @@ namespace BomRainB.ViewModel
             _checkFilesCommand = new RelayCommand(CheckBomVsAoi);
             _validateAOIfileCommand = new RelayCommand(ValidateAOIFile);
             user = mainWindowUser;
+            revisionBusiness = new RevisionBusiness();
 
             bomLock = new object();
             aoiLock = new object();
@@ -181,7 +184,13 @@ namespace BomRainB.ViewModel
         private async void InsertValidation()
         {
             ValidateAOI dialogView = new ValidateAOI() { DataContext = new ValidateAOIVM() };
-            await(DialogHost.Show(dialogView, "RootDialog"));
+            var result = (bool)(await(DialogHost.Show(dialogView, "RootDialog")));
+            string fileName = RemoveDotExtension(selectedFileCSV);
+            if (result)
+            {
+                //traer la ultima revision realizada de este doc, checar si las revisiones coinciden o no
+                revisionBusiness.InsertRevision(this.user, fileName, selectedRevisionVersion);
+            }
         }
 
         #endregion Validate-AOI-FIle

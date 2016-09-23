@@ -22,5 +22,17 @@ namespace BomRainB.Business
             return unitOfWork.RevisionRepository.GetList();
         }
 
+        public void InsertRevision(User user, string documentName, string revisionVersion)
+        {
+            Revision rev = new Revision()
+            {
+                DocumentName = documentName,
+                DocuemntVersion = revisionVersion,
+                Date = DateTime.Now,
+                UserId = user.Id
+            };
+            unitOfWork.RevisionRepository.Insert(rev);
+            unitOfWork.CommitChanges();
+        }
     }
 }

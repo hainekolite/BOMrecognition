@@ -44,7 +44,7 @@
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Column="0" Grid.Row="0" Margin="15,10,10,10" Background="#4DB6AC">
+            <Grid Grid.Column="0" Grid.Row="0" Margin="10,10,10,10" Background="#4DB6AC">
                 <TextBlock Grid.Column="0" Grid.Row="0" Foreground="White" FontSize="14" FontFamily="{StaticResource MaterialDesignFont}" 
                        HorizontalAlignment="Center"
                        TextAlignment="Center"
@@ -55,7 +55,7 @@
                        Text="{Binding ResultAOIMessage}"/>
             </Grid>
 
-            <Grid Grid.Column="1" Grid.Row="0" Margin="10,10,15,10" Background="#4DB6AC">
+            <Grid Grid.Column="1" Grid.Row="0" Margin="10,10,10,10" Background="#4DB6AC">
                 <TextBlock Grid.Column="1" Grid.Row="0" Foreground="White" FontSize="14" FontFamily="{StaticResource MaterialDesignFont}" 
                        HorizontalAlignment="Center"
                        TextAlignment="Center"
