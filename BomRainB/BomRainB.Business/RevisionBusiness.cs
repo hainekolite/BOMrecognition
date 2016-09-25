@@ -32,6 +32,7 @@ namespace BomRainB.Business
                 Date = DateTime.Now,
                 UserId = user.Id
             };
+            user.Revisions.Add(rev);
             unitOfWork.RevisionRepository.Insert(rev);
             unitOfWork.CommitChanges();
         }
