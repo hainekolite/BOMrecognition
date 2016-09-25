@@ -13,7 +13,7 @@ namespace BomRainB.ViewModel
 {
     public class LoginVM : ViewModelBase
     {
-
+        #region properties
         private const string INFO = "Currently logged as: ";
         private const string LOG_IN_FAILED = "User account or password are incorrect";
 
@@ -22,7 +22,8 @@ namespace BomRainB.ViewModel
 
         private readonly ParameterCommand _logInAccessCommand;
         public ParameterCommand LogInAccessCommand => _logInAccessCommand;
-        
+
+        private Task logInTask;
 
         private bool _canLogOutAccess;
         public bool CanLogOutAccess
@@ -100,6 +101,10 @@ namespace BomRainB.ViewModel
         private UserBusiness userBusiness;
         private User user;
 
+        #endregion properties
+
+        #region constructor
+
         public LoginVM(MainWindowVM mainWindowData)
         {
             userBusiness = new UserBusiness();
@@ -122,29 +127,37 @@ namespace BomRainB.ViewModel
             _account = string.Empty;
         }
 
+        #endregion constructor
+
+        #region LoginAciontsRelated
         private void LogInAction(object parameter)
         {
             var pass = parameter as PasswordBox;
             _password = pass.Password;
-            var usersQuery = userBusiness.GetUserByAccountPasswordByIQueryable(Account,_password).FirstOrDefault();
-           
-            if (usersQuery != null)
+            if (logInTask == null || logInTask.IsCompleted)
             {
-                this.mainWindowData.CanAccess = true;
-                CanLogInAccess = !this.mainWindowData.CanAccess;
-                CanLogOutAccess = this.mainWindowData.CanAccess;
-                this.mainWindowData.user = usersQuery;
-                user = this.mainWindowData.user;
-                PersonalInfo = string.Format("{0}{1} {2}", INFO, user.Name, user.LastName);
-                Account = string.Empty;
+                logInTask = Task.Run(() => {
+                    var usersQuery = userBusiness.GetUserByAccountPasswordByIQueryable(Account, _password).FirstOrDefault();
+                    if (usersQuery != null)
+                    {
+                        this.mainWindowData.CanAccess = true;
+                        CanLogInAccess = !this.mainWindowData.CanAccess;
+                        CanLogOutAccess = this.mainWindowData.CanAccess;
+                        this.mainWindowData.user = usersQuery;
+                        user = this.mainWindowData.user;
+                        PersonalInfo = string.Format("{0}{1} {2}", INFO, user.Name, user.LastName);
+                        Account = string.Empty;
+                        this.mainWindowData.updatePermissions();
+                    }
+                    else
+                    {
+                        this.mainWindowData.CanAccess = false;
+                        PersonalInfo = string.Format("{0}", LOG_IN_FAILED);
+                    }
+                });
                 pass.Password = string.Empty;
-                this.mainWindowData.updatePermissions();
-            }
-            else
-            {
-                this.mainWindowData.CanAccess = false;
-                PersonalInfo = string.Format("{0}", LOG_IN_FAILED);
-            }   
+                PersonalInfo = "Working";
+            }            
         }
 
         private void LogOutAction(object parameter)
@@ -164,6 +177,8 @@ namespace BomRainB.ViewModel
             CanLogOutAccess = this.mainWindowData.CanAccess;
 
         }
+
+        #endregion LoginAciontsRelated
 
     }
 }

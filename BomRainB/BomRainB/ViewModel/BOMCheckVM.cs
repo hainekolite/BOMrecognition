@@ -31,7 +31,10 @@ namespace BomRainB.ViewModel
         private const string DOT_EXTENSION_NOT_PRESENT = "Something went wrong, one or more files have not been loaded or one of your files doesn not contain the correct file extension .txt or .csv. Please check the files before start the check";
         private const string FILE_NAMES_NOT_EQUAL = "Files names doesnt match each other. Please select the correct files to start the check process";
         private const string FILE_ONLY_HAVE_HEADERS = "Something went wrong, the file only contains the headers, not data was indetified. Check your file please";
+        private const string REVISION_ADDED = "Revision Added Succesfully";
+        private const string REVISION_OUTDATED = "There is a same or newer version of your document in the databse, please check the versioning of the document in the report section";
         private const string ERROR = "ERROR";
+        private const string SUCCESS = "SUCCESS";
         private const char QUOTE_MARK_REPLACEMENT = '\'';
         private const char QUOTE_MARK = '"';
         private const char COLON = ',';
@@ -186,13 +189,29 @@ namespace BomRainB.ViewModel
             ValidateAOI dialogView = new ValidateAOI() { DataContext = new ValidateAOIVM() };
             var result = (bool)(await(DialogHost.Show(dialogView, "RootDialog")));
             string fileName = RemoveDotExtension(selectedFileCSV);
+            selectedRevisionVersion = Regex.Replace(selectedRevisionVersion," ",string.Empty); 
             if (result)
             {
-                //traer la ultima revision realizada de este doc, checar si las revisiones coinciden o no
-                revisionBusiness.InsertRevision(this.user, fileName, selectedRevisionVersion);
+                //new Task(() => {
+                    var query = revisionBusiness.GetRevisionByDocumentName(fileName).ToList().Last();
+                    if (query != null)
+                    {
+                        if (IsRevisionVersionValid(selectedRevisionVersion, query.DocuemntVersion))
+                        {
+                            revisionBusiness.InsertRevision(this.user, fileName, selectedRevisionVersion.Trim().ToUpper());
+                            MessageBox.Show(REVISION_ADDED, SUCCESS);
+                        }
+                        else
+                            MessageBox.Show(REVISION_OUTDATED, ERROR);
+                    }
+                    else
+                    {
+                    revisionBusiness.InsertRevision(this.user, fileName, selectedRevisionVersion.Trim().ToUpper());
+                    MessageBox.Show(REVISION_ADDED, SUCCESS);
+                    }
+                //});
             }
         }
-
         #endregion Validate-AOI-FIle
 
         #region CheckRegion
@@ -602,7 +621,7 @@ namespace BomRainB.ViewModel
                     {
                         isRevisionPresent = true;
                         if (!(string.IsNullOrEmpty(data[i + 1])))
-                            return (data[i + 1]);
+                            return (data[i + 1].ToUpper());
                         else
                         {
                             isRevisionPresent = false;
@@ -732,6 +751,30 @@ namespace BomRainB.ViewModel
                     listCount--;
                 }
             }
+        }
+
+        private bool IsRevisionVersionValid(string revisionVersion, string LastVersionInDB)
+        {
+            string newVersion = revisionVersion.Trim();
+            string oldVersion = LastVersionInDB.Trim();
+            if (newVersion.Length > oldVersion.Length)
+            {
+                return (true);
+            }
+            else if (newVersion.Length == oldVersion.Length)
+            {
+                for (int i=0; i< newVersion.Length; i++)
+                {
+                    if (newVersion.ElementAt(i) > oldVersion.ElementAt(i))
+                        return (true);
+                    else if (newVersion.ElementAt(i) < oldVersion.ElementAt(i))
+                        return (false);
+                }
+                return (false);
+            }
+            else
+                return (false);
+
         }
 
         #endregion GeneralUse
