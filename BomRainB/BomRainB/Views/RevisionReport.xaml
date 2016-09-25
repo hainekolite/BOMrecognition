@@ -84,6 +84,63 @@
             </DataGrid>
 
 
+            <DataGrid Grid.Column="1" Grid.Row="1"
+                      Margin="10" ItemsSource="{Binding UserRevisionList, Mode=OneWay}"
+                      Background="#00897B"
+                      RowHeight="36"                      
+                      AutoGenerateColumns="False"
+                      HorizontalScrollBarVisibility="Visible"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserResizeColumns="False"
+                      CanUserResizeRows="False"
+                      CanUserReorderColumns="False"
+                      CanUserSortColumns="False"
+                      IsReadOnly="True"
+                      Foreground="White"
+                      >
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="HorizontalContentAlignment" Value="center"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Height" Value="36"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn MinWidth="64" Header="Document Name" Binding="{Binding DocumentName, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn MinWidth="64" Header="Document Version" Binding="{Binding DocuemntVersion, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn MinWidth="64" Header="Date of revision" Binding="{Binding Date, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- falta una colum -->
+
+                </DataGrid.Columns>
+            </DataGrid>
+
+
+
+
+
 
         </Grid>
         

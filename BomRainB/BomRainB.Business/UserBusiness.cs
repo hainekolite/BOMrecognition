@@ -17,20 +17,15 @@ namespace BomRainB.Business
             unitOfWork = new UnitOfWork();
         }
 
-        public ICollection<User> GetAll()
-        {
-            return unitOfWork.UserRepository.GetList();
-        }
+        public ICollection<User> GetAll() => (unitOfWork.UserRepository.GetList());
 
-        public IQueryable<User> GetAllUserByIQueryable()
-        {
-            return (unitOfWork.UserRepository.GetQuery());
-        }
+        public IQueryable<User> GetAllUserByIQueryable() => 
+            (unitOfWork.UserRepository.GetQuery(null,null, includeProperties : GetIncludeProperties()));
 
-        public IEnumerable<User> GetUserByAccountPasswordByIQueryable(string account, string password)
-        {
-            return (GetAllUserByIQueryable().Where(u => u.AccountName == account && u.Password == password).ToList());
-        }
-        
+        public IEnumerable<User> GetUserByAccountPasswordByIQueryable(string account, string password) => 
+            (GetAllUserByIQueryable().Where(u => u.AccountName == account && u.Password == password).ToList());
+
+        public string[] GetIncludeProperties() => new[] { "Revisions"};
+
     }
 }

@@ -20,6 +20,7 @@ namespace BomRainB.ViewModel
     public class BOMCheckVM : ViewModelBase
     {
         #region Properties
+
         private OpenFileDialog documentTxt;
         private OpenFileDialog documentCsv;
         private const string DIALOG_TXT_TITLE = "Select the AOI document in .txt format";
@@ -755,8 +756,8 @@ namespace BomRainB.ViewModel
 
         private bool IsRevisionVersionValid(string revisionVersion, string LastVersionInDB)
         {
-            string newVersion = revisionVersion.Trim();
-            string oldVersion = LastVersionInDB.Trim();
+            string newVersion = Regex.Replace(revisionVersion," ", string.Empty);
+            string oldVersion = Regex.Replace(LastVersionInDB, " ", string.Empty);
             if (newVersion.Length > oldVersion.Length)
             {
                 return (true);

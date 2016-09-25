@@ -27,11 +27,29 @@ namespace BomRainB.ViewModel
             }
         }
 
+        private ICollection<Revision> _userRevisionList;
+        public ICollection<Revision> UserRevisionList
+        {
+            get
+            {
+                return (_userRevisionList);
+            }
+            set
+            {
+                _userRevisionList = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RevisionReportVM(User user)
         {
             this.user = user;
             revisionBusiness = new RevisionBusiness();
-            RevisionList = revisionBusiness.GetAllByIQueryable().ToList();
+            Task.Run(() =>
+            {
+                RevisionList = revisionBusiness.GetAllByIQueryable().ToList();
+            });
+            this._userRevisionList = user.Revisions;
         }
 
     }

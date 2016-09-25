@@ -17,20 +17,11 @@ namespace BomRainB.Business
             unitOfWork = new UnitOfWork();
         }
 
-        public ICollection<Revision> GetAll()
-        {
-            return unitOfWork.RevisionRepository.GetList();
-        }
+        public ICollection<Revision> GetAll() => unitOfWork.RevisionRepository.GetList();
 
-        public IQueryable<Revision> GetAllByIQueryable()
-        {
-            return (unitOfWork.RevisionRepository.GetQuery());
-        }
-
-        public IQueryable<Revision> GetRevisionByDocumentName(string documentName)
-        {
-            return (unitOfWork.RevisionRepository.GetQuery().Where(r=> r.DocumentName == documentName));
-        }
+        public IQueryable<Revision> GetAllByIQueryable() => (unitOfWork.RevisionRepository.GetQuery());
+        
+        public IQueryable<Revision> GetRevisionByDocumentName(string documentName) => (unitOfWork.RevisionRepository.GetQuery().Where(r=> r.DocumentName == documentName));
 
         public void InsertRevision(User user, string documentName, string revisionVersion)
         {
