@@ -380,9 +380,10 @@ namespace BomRainB.ViewModel
         private List<AoiInterestData> GetAoiInterestData(string[] rawTxtData)
         {
             int[] offset = { -1, -1 };
+            int dump = 0;
             bool flag = true;
             bool isHeaderPresent = true;
-            string[] filteredTXTVData = GetFilteredData(rawTxtData, out isHeaderPresent, AoiInterestHeaders);
+            string[] filteredTXTVData = GetFilteredData(rawTxtData, out isHeaderPresent, AoiInterestHeaders, out dump);
             if (isHeaderPresent)
             {
                 return filteredTXTVData.Select(line =>
@@ -432,11 +433,12 @@ namespace BomRainB.ViewModel
         private List<BomInterestData> GetBomInterestData(string[] csvRawData)
         {
             int[] offset = { -1, -1 };
+            int RevisionZone = 0;
             bool flag = true;
             bool isHeaderPresent = true;
             bool isRevisionPresent = true;
-            string[] filteredCSVData = GetFilteredData(csvRawData, out isHeaderPresent, BomInterestHeaders);
-            selectedRevisionVersion = CheckForRevisionHeader(csvRawData, out isRevisionPresent);
+            string[] filteredCSVData = GetFilteredData(csvRawData, out isHeaderPresent, BomInterestHeaders, out RevisionZone);
+            selectedRevisionVersion = CheckForRevisionHeader(csvRawData, out isRevisionPresent, RevisionZone);
             if (isRevisionPresent)
                 selectedRevisionVersion = GetRevisionString(selectedRevisionVersion, out isRevisionPresent);
             if (isHeaderPresent && isRevisionPresent)
@@ -557,11 +559,11 @@ namespace BomRainB.ViewModel
             }
         }
 
-        private string CheckForRevisionHeader(string[] rawData, out bool isRevisionPresent)
+        private string CheckForRevisionHeader(string[] rawData, out bool isRevisionPresent, int revisionZone)
         {
             string revisionVer = string.Empty;
             isRevisionPresent = true;
-            for (int i = 0; i < rawData.Count(); i++)
+            for (int i = 0; i < revisionZone; i++)
             {
                 if (Regex.Replace(rawData[i], " ", "").ToUpper().Contains(REVISION_QUOTE))
                 {
@@ -593,14 +595,18 @@ namespace BomRainB.ViewModel
             }
         }
 
-        private string[] GetFilteredData(string[] rawData, out bool isHeaderPresent, string[] headers)
+        private string[] GetFilteredData(string[] rawData, out bool isHeaderPresent, string[] headers, out int revisionZone)
         {
             isHeaderPresent = true;
             for (int i = 0; i < rawData.Count(); i++)
             {
                 if (Regex.Replace(rawData[i], " ", "").ToUpper().Contains(headers[0]) && Regex.Replace(rawData[i], " ", "").ToUpper().Contains(headers[1]))
+                {
+                    revisionZone = i;
                     return (ReplaceQuoteMarks(rawData.Skip(i).ToArray()));
+                }
             }
+            revisionZone = 0;
             isHeaderPresent = false;
             return (null);
         }
@@ -630,14 +636,21 @@ namespace BomRainB.ViewModel
                     try
                     {
                         isRevisionPresent = true;
-                        if (!(string.IsNullOrEmpty(data[i + 1])))
-                            return (data[i + 1].ToUpper());
+                        if (data?.Count() > i)
+                        {
+                            if (!(string.IsNullOrEmpty(Regex.Replace(data[i + 1], " ", string.Empty))))
+                                return (data[i + 1].ToUpper());
+                            else
+                            {
+                                isRevisionPresent = false;
+                                return (null);
+                            }
+                        }
                         else
                         {
                             isRevisionPresent = false;
                             return (null);
-                        }
-                            
+                        }   
                     }
                     catch (Exception e)
                     {
