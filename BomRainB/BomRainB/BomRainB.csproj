@@ -98,6 +98,7 @@
       <DependentUpon>BOMCheck.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Views\Converters\MultiValueConverter.cs" />
     <Compile Include="Views\Converters\SideBarWidthConverter.cs" />
     <Compile Include="Views\Dialogs\DiferencesViewer.xaml.cs">
       <DependentUpon>DiferencesViewer.xaml</DependentUpon>

@@ -23,6 +23,9 @@ namespace BomRainB.Business
         
         public IQueryable<Revision> GetRevisionByDocumentName(string documentName) => (unitOfWork.RevisionRepository.GetQuery().Where(r=> r.DocumentName == documentName));
 
+        public IQueryable<Revision> GetAllRevisionsInDateRange(DateTime beginDate, DateTime finishDate) => 
+            GetAllByIQueryable().Where(r => r.Date >= beginDate && r.Date <= finishDate).OrderBy(r => r.Date);
+
         public void InsertRevision(User user, string documentName, string revisionVersion)
         {
             Revision rev = new Revision()

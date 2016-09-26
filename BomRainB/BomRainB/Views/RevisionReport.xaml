@@ -4,9 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:BomRainB.Views.Converters"
              xmlns:local="clr-namespace:BomRainB.Views"   
              mc:Ignorable="d" 
              d:DesignHeight="768" d:DesignWidth="1366">
+
+    <ContentControl.Resources>
+        <ResourceDictionary>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:MultiValueConverter x:Key="MultiValueConverter"/>
+        </ResourceDictionary>
+    </ContentControl.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -16,13 +25,73 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="30,30,30,30" Height="Auto">
-            <TextBlock  FontSize="40"
+        <Grid Grid.Row="0" Grid.Column="0" Margin="30,30,30,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width=".15*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock  FontSize="30"
 					    Text="Revision Reports"
                         FontFamily="{StaticResource MaterialDesignFont}"
                         Foreground="#004D40"
                         VerticalAlignment="Center"/>
-        </StackPanel>
+
+            <Border  BorderBrush="#4DB6AC"  BorderThickness="3,3,3,3" Margin="350,0,0,0" CornerRadius="8,8,8,8" HorizontalAlignment="Right">
+                <Grid Background="#4DB6AC">
+                    <TextBlock Text="Initial date"
+                           FontFamily="{StaticResource MaterialDesignFont}"
+                           Foreground="White"
+                           FontSize="16"
+                           Margin="20,0,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
+
+                    <DatePicker Name="FirstDate"
+                        Margin="120,0,0,0"
+                        FontSize="16"
+                        Foreground="White"
+                        SelectedDate="{Binding InitialDate}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"/>
+
+                    <TextBlock Text="Finish date"
+                           FontFamily="{StaticResource MaterialDesignFont}"
+                           Foreground="White"
+                           FontSize="16"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center" Margin="250,0,0,0"/>
+
+                    <DatePicker Name="LastDate"
+                        Margin="350,0,20,0"
+                        FontSize="16"
+                        Foreground="White"
+                        SelectedDate="{Binding FinishDate}"
+                        VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Button Grid.Column="1"
+                    Content="Filter by date"
+                    Foreground="White"
+                    Background="#00695C"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Margin="10,0,0,0"
+                    FontSize="16"
+                    Command="{Binding FilterByDateCommand}">
+                <Button.CommandParameter>
+                    <MultiBinding Converter="{StaticResource MultiValueConverter}">
+                        <Binding ElementName="FirstDate"/>
+                        <Binding ElementName="LastDate"/>
+                    </MultiBinding>
+                </Button.CommandParameter>
+                
+            </Button>
+            
+        </Grid>
 
         <Grid Grid.Row="1" Grid.Column="0" Margin="20" Background="#004D40">
             <Grid.RowDefinitions>
