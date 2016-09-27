@@ -99,9 +99,26 @@ namespace BomRainB.ViewModel
             _initialDate = DateTime.Now;
             _finishDate = DateTime.Now;
             revisionBusiness = new RevisionBusiness();
+            userBusiness = new UserBusiness();
+
             GeneraListThread = Task.Run(() =>
             {
                 RevisionList = revisionBusiness.GetAllByIQueryableOrderedDescending().ToList();
+                if (RevisionList != null && RevisionList.Count >= 1)
+                {
+                    var query = userBusiness.GetAll();
+                    for (int i=0; i< RevisionList.Count; i++)
+                    {
+                        try
+                        {
+                            RevisionList.ElementAt(i).User = query.Where(u => u.Id == RevisionList.ElementAt(i).UserId).FirstOrDefault();
+                        }
+                        catch(Exception e)
+                        {
+                            RevisionList.ElementAt(i).User = null;
+                        }
+                    }
+                }
             });
             this._userRevisionList = user.Revisions.OrderByDescending(r => r.Date).ToList();
             _filterByDateCommand = new ParameterCommand(FilterRevisionsByDate);
@@ -122,6 +139,18 @@ namespace BomRainB.ViewModel
                     _finishDate = ((DateTime)lastDate.SelectedDate);
                     GeneraListThread = Task.Run(() => {
                         RevisionList = revisionBusiness.GetAllRevisionsInDateRange(_initialDate, _finishDate).ToList();
+                        for (int i = 0; i < RevisionList.Count; i++)
+                        {
+                            var query = userBusiness.GetAll();
+                            try
+                            {
+                                RevisionList.ElementAt(i).User = query.Where(u => u.Id == RevisionList.ElementAt(i).UserId).FirstOrDefault();
+                            }
+                            catch (Exception e)
+                            {
+                                RevisionList.ElementAt(i).User = null;
+                            }
+                        }
                     });
                     
                 }
