@@ -1,6 +1,7 @@
 namespace BomRainB.Models
 {
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
 
     public class User 
     {

@@ -25,7 +25,10 @@ namespace BomRainB.Business
         public IEnumerable<User> GetUserByAccountPasswordByIQueryable(string account, string password) => 
             (GetAllUserByIQueryable().Where(u => u.AccountName == account && u.Password == password).ToList());
 
-        public string[] GetIncludeProperties() => new[] { "Revisions"};
+        public User GetUserById(int userId) => (unitOfWork.UserRepository.GetByID(userId));
+        
+
+        public string[] GetIncludeProperties() => new[] {"Revisions"};
 
     }
 }

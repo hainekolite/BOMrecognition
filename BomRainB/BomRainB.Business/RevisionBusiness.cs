@@ -19,7 +19,7 @@ namespace BomRainB.Business
 
         public ICollection<Revision> GetAll() => unitOfWork.RevisionRepository.GetList();
 
-        public IQueryable<Revision> GetAllByIQueryable() => (unitOfWork.RevisionRepository.GetQuery());
+        public IQueryable<Revision> GetAllByIQueryable() => (unitOfWork.RevisionRepository.GetQuery(null,null, includeProperties : GetIncludeProperties()));
 
         public IQueryable<Revision> GetAllByIQueryableOrderedDescending() => (unitOfWork.RevisionRepository.GetQuery().OrderByDescending(r => r.Date));
 
@@ -41,5 +41,7 @@ namespace BomRainB.Business
             unitOfWork.RevisionRepository.Insert(rev);
             unitOfWork.CommitChanges();
         }
+
+        public string[] GetIncludeProperties() => new[] { "User" };
     }
 }

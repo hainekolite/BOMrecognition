@@ -197,22 +197,22 @@ namespace BomRainB.ViewModel
             if (result)
             {
                 //new Task(() => {
-                    var query = revisionBusiness.GetRevisionByDocumentName(fileName).ToList().Last();
-                    if (query != null)
+                var query = revisionBusiness.GetRevisionByDocumentName(fileName)?.ToList();//.Last();
+                if (query != null && query.Count >= 1)
+                {
+                    if (IsRevisionVersionValid(selectedRevisionVersion, query.Last().DocuemntVersion))
                     {
-                        if (IsRevisionVersionValid(selectedRevisionVersion, query.DocuemntVersion))
-                        {
-                            revisionBusiness.InsertRevision(this.user, fileName, selectedRevisionVersion.Trim().ToUpper());
-                            MessageBox.Show(REVISION_ADDED, SUCCESS);
-                        }
-                        else
-                            MessageBox.Show(REVISION_OUTDATED, ERROR);
+                        revisionBusiness.InsertRevision(this.user, fileName, selectedRevisionVersion.Trim().ToUpper());
+                        MessageBox.Show(REVISION_ADDED, SUCCESS);
                     }
                     else
-                    {
-                    revisionBusiness.InsertRevision(this.user, fileName, selectedRevisionVersion.Trim().ToUpper());
-                    MessageBox.Show(REVISION_ADDED, SUCCESS);
-                    }
+                        MessageBox.Show(REVISION_OUTDATED, ERROR);
+                }
+                else
+                {
+                revisionBusiness.InsertRevision(this.user, fileName, selectedRevisionVersion.Trim().ToUpper());
+                MessageBox.Show(REVISION_ADDED, SUCCESS);
+                }
                 //});
             }
         }
@@ -368,30 +368,30 @@ namespace BomRainB.ViewModel
                 if (AoiThread.IsCompleted)
                 {
                     if (Directory.Exists(ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH)))
-                        documentCsv.InitialDirectory = ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH);
+                        documentTxt.InitialDirectory = ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH);
                     else
                     {
                         if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal))))
-                            documentCsv.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+                            documentTxt.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
                     }
-                    documentCsv.ShowDialog();
-                    if (!(string.IsNullOrEmpty(documentCsv.FileName)))
-                        BomThread = ProcessCsvFile();
+                    documentTxt.ShowDialog();
+                    if (!(string.IsNullOrEmpty(documentTxt.FileName)))
+                        AoiThread = ProcessTxtFile();
                 }
             }
             else
             {
                 string data = ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH);
                 if (Directory.Exists(ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH)))
-                    documentCsv.InitialDirectory = ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH);
+                    documentTxt.InitialDirectory = ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH);
                 else
                 {
                     if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal))))
-                        documentCsv.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+                        documentTxt.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
                 }
-                documentCsv.ShowDialog();
-                if (!(string.IsNullOrEmpty(documentCsv.FileName)))
-                    BomThread = ProcessCsvFile();
+                documentTxt.ShowDialog();
+                if (!(string.IsNullOrEmpty(documentTxt.FileName)))
+                    AoiThread = ProcessTxtFile();
             }
         }
 

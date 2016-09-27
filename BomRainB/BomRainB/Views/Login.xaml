@@ -82,7 +82,7 @@
 
                 <TextBox Grid.Column="1" Grid.Row="0" Margin="40,20,180,40" x:Name="AccountTextBox"
                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                     MaxLength="15"
+                     MaxLength="30"
                      FontSize="30"
                      Foreground="White"
                      Text="{Binding Account, UpdateSourceTrigger=PropertyChanged}">
@@ -101,7 +101,7 @@
                        Margin="0,0,100,0"/>
 
                 <PasswordBox Name="PassBox" Grid.Column="1" Grid.Row="1" Margin="40,20,180,40"
-                             MaxLength="15"
+                             MaxLength="30"
                              FontSize="30"
                              Foreground="White"
                              />

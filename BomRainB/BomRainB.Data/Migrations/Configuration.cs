@@ -1,7 +1,9 @@
 namespace BomRainB.Data.Migrations
 {
-    using Models;
+    using System;
+    using System.Data.Entity;
     using System.Data.Entity.Migrations;
+    using System.Linq;
 
     internal sealed class Configuration : DbMigrationsConfiguration<BomRainB.Data.BomRainBirdDbContext>
     {
@@ -24,13 +26,6 @@ namespace BomRainB.Data.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
-
-            context.Users.AddOrUpdate( u => u.Id,
-                new User { Id = 1, Name = "Jaime", LastName = "Carpintero Carrillo", AccountName = "Jaime", Password = "hola", AccountType = 1},
-                new User { Id = 1, Name = "Esmeralda", LastName = "Quintero Flores", AccountName = "Jaime", Password = "hola", AccountType = 1 }
-            );
-
-            context.SaveChanges();
         }
     }
 }

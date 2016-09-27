@@ -15,6 +15,7 @@ namespace BomRainB.ViewModel
     public class RevisionReportVM : ViewModelBase
     {
         private readonly RevisionBusiness revisionBusiness;
+        private readonly UserBusiness userBusiness;
         private readonly User user;
 
         private readonly ParameterCommand _filterByDateCommand;
@@ -58,6 +59,20 @@ namespace BomRainB.ViewModel
             set
             {
                 _revisionList = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ICollection<User> _revisionListUsers;
+        public ICollection<User> RevisionListUsers
+        {
+            get
+            {
+                return (_revisionListUsers);
+            }
+            set
+            {
+                _revisionListUsers = value;
                 OnPropertyChanged();
             }
         }
