@@ -410,11 +410,18 @@ namespace BomRainB.ViewModel
                     ReturnColons(data);
                     if (flag)
                         GetHeaderOffset(data, offset, out flag, AoiInterestHeaders);
-                    if(data?.Count() > offset[1] && data?.Count() > offset[0])
+                    try
                     {
-                        return (new AoiInterestData(data[offset[0]], data[offset[1]]));
+                        if (data?.Count() > offset[1] && data?.Count() > offset[0])
+                        {
+                            return (new AoiInterestData(data[offset[0]], data[offset[1]]));
+                        }
+                        else
+                        {
+                            return (new AoiInterestData(" ", " "));
+                        }
                     }
-                    else
+                    catch(Exception e)
                     {
                         return (new AoiInterestData(" ", " "));
                     }
@@ -482,12 +489,18 @@ namespace BomRainB.ViewModel
                     ReturnColons(data);
                     if (flag)
                         GetHeaderOffset(data, offset, out flag, BomInterestHeaders);
-
-                    if (data?.Count() > offset[1] && data?.Count() > offset[0])
+                    try
                     {
-                        return (new BomInterestData(data[offset[0]], data[offset[1]]));
+                        if (data?.Count() > offset[1] && data?.Count() > offset[0])
+                        {
+                            return (new BomInterestData(data[offset[0]], data[offset[1]]));
+                        }
+                        else
+                        {
+                            return (new BomInterestData(" ", " "));
+                        }
                     }
-                    else
+                    catch(Exception e)
                     {
                         return (new BomInterestData(" ", " "));
                     }
@@ -669,7 +682,7 @@ namespace BomRainB.ViewModel
                     try
                     {
                         isRevisionPresent = true;
-                        if (data?.Count() > i)
+                        if (data?.Count() > i )
                         {
                             if (!(string.IsNullOrEmpty(Regex.Replace(data[i + 1], " ", string.Empty))))
                                 return (data[i + 1].ToUpper());
@@ -748,7 +761,7 @@ namespace BomRainB.ViewModel
             {
                 if (fileString.ElementAt(i).Equals('.'))
                 {
-                    fileString = fileString.Remove(fileString.Length - i, i);
+                    fileString = fileString.Remove(i, fileString.Length - i);
                     return (fileString);
                 }
             }
