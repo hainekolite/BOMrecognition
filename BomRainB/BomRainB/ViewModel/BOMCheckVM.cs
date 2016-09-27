@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,8 @@ namespace BomRainB.ViewModel
 
         private OpenFileDialog documentTxt;
         private OpenFileDialog documentCsv;
+        private const string BOM_DIRECTORY_PATH = "BomDirectoryPath";
+        private const string AOI_DIRECTORY_PATH = "AoiDirectoryPath";
         private const string DIALOG_TXT_TITLE = "Select the AOI document in .txt format";
         private const string DIALOG_CSV_TITLE = "Select the BOM document in .csv format";
         private const string NO_FILES_SELECTED = "Press the open button to Select a file";
@@ -364,16 +367,31 @@ namespace BomRainB.ViewModel
             {
                 if (AoiThread.IsCompleted)
                 {
-                    documentTxt.ShowDialog();
-                    if (!(string.IsNullOrEmpty(documentTxt.FileName)))
-                        AoiThread = ProcessTxtFile();
+                    if (Directory.Exists(ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH)))
+                        documentCsv.InitialDirectory = ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH);
+                    else
+                    {
+                        if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal))))
+                            documentCsv.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+                    }
+                    documentCsv.ShowDialog();
+                    if (!(string.IsNullOrEmpty(documentCsv.FileName)))
+                        BomThread = ProcessCsvFile();
                 }
             }
             else
             {
-                documentTxt.ShowDialog();
-                if (!(string.IsNullOrEmpty(documentTxt.FileName)))
-                    AoiThread = ProcessTxtFile();
+                string data = ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH);
+                if (Directory.Exists(ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH)))
+                    documentCsv.InitialDirectory = ConfigurationManager.AppSettings.Get(AOI_DIRECTORY_PATH);
+                else
+                {
+                    if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal))))
+                        documentCsv.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+                }
+                documentCsv.ShowDialog();
+                if (!(string.IsNullOrEmpty(documentCsv.FileName)))
+                    BomThread = ProcessCsvFile();
             }
         }
 
@@ -417,29 +435,28 @@ namespace BomRainB.ViewModel
             {
                 if (BomThread.IsCompleted)
                 {
-                    documentCsv.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+                    if (Directory.Exists(ConfigurationManager.AppSettings.Get(BOM_DIRECTORY_PATH)))
+                        documentCsv.InitialDirectory = ConfigurationManager.AppSettings.Get(BOM_DIRECTORY_PATH);
+                    else
+                    {
+                        if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal))))
+                            documentCsv.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+                    }
                     documentCsv.ShowDialog();
-                    //if () if directory Exist
                     if (!(string.IsNullOrEmpty(documentCsv.FileName)))
                         BomThread = ProcessCsvFile();
                 }
             }
             else
             {
-                //Directory.GetAccessControl(@"\\\\DESKTOP - 00DBTE3\\Documents\\$");
-                //if (Directory.Exists(@"\\\\DESKTOP - 00DBTE3\\c$"))
-                //{
-                    //documentCsv.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.NetworkShortcuts);
-                //}
-                //else
-                //{
+                string data = ConfigurationManager.AppSettings.Get(BOM_DIRECTORY_PATH);
+                if (Directory.Exists(ConfigurationManager.AppSettings.Get(BOM_DIRECTORY_PATH)))
+                    documentCsv.InitialDirectory = ConfigurationManager.AppSettings.Get(BOM_DIRECTORY_PATH);
+                else
+                {
                     if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal))))
                         documentCsv.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
-                //}
-                if (Directory.Exists("\\\\DESKTOP-00DBTE3\\Documents\\"))
-                {
-                    documentCsv.InitialDirectory = "\\\\DESKTOP-00DBTE3\\Documents\\";
-                }
+                }                
                 documentCsv.ShowDialog();
                 if (!(string.IsNullOrEmpty(documentCsv.FileName)))
                     BomThread = ProcessCsvFile();

@@ -20,11 +20,13 @@ namespace BomRainB.Business
         public ICollection<Revision> GetAll() => unitOfWork.RevisionRepository.GetList();
 
         public IQueryable<Revision> GetAllByIQueryable() => (unitOfWork.RevisionRepository.GetQuery());
-        
+
+        public IQueryable<Revision> GetAllByIQueryableOrderedDescending() => (unitOfWork.RevisionRepository.GetQuery().OrderByDescending(r => r.Date));
+
         public IQueryable<Revision> GetRevisionByDocumentName(string documentName) => (unitOfWork.RevisionRepository.GetQuery().Where(r=> r.DocumentName == documentName));
 
-        public IQueryable<Revision> GetAllRevisionsInDateRange(DateTime beginDate, DateTime finishDate) => 
-            GetAllByIQueryable().Where(r => r.Date >= beginDate && r.Date <= finishDate).OrderBy(r => r.Date);
+        public IQueryable<Revision> GetAllRevisionsInDateRange(DateTime beginDate, DateTime finishDate) =>
+            GetAllByIQueryable().Where(r => r.Date >= beginDate && r.Date <= finishDate).OrderByDescending(r => r.Date);
 
         public void InsertRevision(User user, string documentName, string revisionVersion)
         {

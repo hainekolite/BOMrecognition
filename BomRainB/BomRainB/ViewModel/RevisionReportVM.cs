@@ -86,9 +86,9 @@ namespace BomRainB.ViewModel
             revisionBusiness = new RevisionBusiness();
             GeneraListThread = Task.Run(() =>
             {
-                RevisionList = revisionBusiness.GetAllByIQueryable().ToList();
+                RevisionList = revisionBusiness.GetAllByIQueryableOrderedDescending().ToList();
             });
-            this._userRevisionList = user.Revisions;
+            this._userRevisionList = user.Revisions.OrderByDescending(r => r.Date).ToList();
             _filterByDateCommand = new ParameterCommand(FilterRevisionsByDate);
         }
 
