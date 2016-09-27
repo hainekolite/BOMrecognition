@@ -10,8 +10,6 @@ namespace BomRainB.ViewModel
 {
     public class ValidateAOIVM : ViewModelBase
     {
-        
-
         private readonly string title;
         public string Title => title;
 

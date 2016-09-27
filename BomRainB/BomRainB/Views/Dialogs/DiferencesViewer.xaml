@@ -55,7 +55,7 @@
                        Text="{Binding ResultAOIMessage}"/>
             </Grid>
 
-            <Grid Grid.Column="1" Grid.Row="0" Margin="10,10,10,10" Background="#4DB6AC">
+            <Grid Grid.Column="1" Grid.Row="0" Margin="10,10,10,10" Background="#4FC3F7">
                 <TextBlock Grid.Column="1" Grid.Row="0" Foreground="White" FontSize="14" FontFamily="{StaticResource MaterialDesignFont}" 
                        HorizontalAlignment="Center"
                        TextAlignment="Center"
@@ -113,7 +113,7 @@
 
             <DataGrid Grid.Column="1" Grid.Row="1"
                       Margin="10" ItemsSource="{Binding BomCheckList, Mode=OneWay}"
-                      Background="#00897B"
+                      Background="#0288D1"
                       RowHeight="36"                      
                       AutoGenerateColumns="False"
                       HorizontalScrollBarVisibility="Visible"

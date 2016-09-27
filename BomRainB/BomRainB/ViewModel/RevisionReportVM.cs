@@ -130,7 +130,7 @@ namespace BomRainB.ViewModel
             DatePicker firstDate = values[0] as DatePicker;
             DatePicker lastDate = values[1] as DatePicker;
             if (firstDate.SelectedDate >= lastDate.SelectedDate)
-                MessageBox.Show("Initial date can not be higher than finish date, also dates cannot be the same","ERROR");
+                MessageBox.Show("Initial date cannot be higher than finish date, also dates cannot be the same", "ERROR");
             else
             {
                 if (RevisionList != null && GeneraListThread.IsCompleted)
