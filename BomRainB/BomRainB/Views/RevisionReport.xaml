@@ -1,0 +1,239 @@
+﻿<ContentControl x:Class="BomRainB.Views.RevisionReport"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:BomRainB.Views.Converters"
+             xmlns:local="clr-namespace:BomRainB.Views"   
+             mc:Ignorable="d" 
+             d:DesignHeight="768" d:DesignWidth="1366">
+
+    <ContentControl.Resources>
+        <ResourceDictionary>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:MultiValueConverter x:Key="MultiValueConverter"/>
+        </ResourceDictionary>
+    </ContentControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".15*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0" Margin="30,30,30,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width=".15*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock  FontSize="30"
+					    Text="Revision Reports"
+                        FontFamily="{StaticResource MaterialDesignFont}"
+                        Foreground="#004D40"
+                        VerticalAlignment="Center"/>
+
+            <Border  BorderBrush="#4DB6AC"  BorderThickness="3,3,3,3" Margin="350,0,0,0" CornerRadius="8,8,8,8" HorizontalAlignment="Right">
+                <Grid Background="#4DB6AC">
+                    <TextBlock Text="Initial date"
+                           FontFamily="{StaticResource MaterialDesignFont}"
+                           Foreground="White"
+                           FontSize="16"
+                           Margin="20,0,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
+
+                    <DatePicker Name="FirstDate"
+                        Margin="120,0,0,0"
+                        FontSize="16"
+                        Foreground="White"
+                        SelectedDate="{Binding InitialDate}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"/>
+
+                    <TextBlock Text="Finish date"
+                           FontFamily="{StaticResource MaterialDesignFont}"
+                           Foreground="White"
+                           FontSize="16"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center" Margin="250,0,0,0"/>
+
+                    <DatePicker Name="LastDate"
+                        Margin="350,0,20,0"
+                        FontSize="16"
+                        Foreground="White"
+                        SelectedDate="{Binding FinishDate}"
+                        VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Button Grid.Column="1"
+                    Content="Filter by date"
+                    Foreground="White"
+                    Background="#00695C"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Margin="10,0,0,0"
+                    FontSize="16"
+                    Command="{Binding FilterByDateCommand}">
+                <Button.CommandParameter>
+                    <MultiBinding Converter="{StaticResource MultiValueConverter}">
+                        <Binding ElementName="FirstDate"/>
+                        <Binding ElementName="LastDate"/>
+                    </MultiBinding>
+                </Button.CommandParameter>
+                
+            </Button>
+            
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="0" Margin="20" Background="#004D40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".06*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       FontFamily="{StaticResource MaterialDesignFont}"
+                       Text="General Revisions"
+                       FontSize="17"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="1"
+                       FontFamily="{StaticResource MaterialDesignFont}"
+                       Text="User Revisions"
+                       FontSize="17"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+            
+
+            <DataGrid Grid.Column="0" Grid.Row="1"
+                      Margin="10" ItemsSource="{Binding RevisionList, Mode=OneWay}"
+                      Background="#00897B"
+                      RowHeight="36"                      
+                      AutoGenerateColumns="False"
+                      HorizontalScrollBarVisibility="Visible"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserResizeColumns="False"
+                      CanUserResizeRows="False"
+                      CanUserReorderColumns="False"
+                      CanUserSortColumns="False"
+                      IsReadOnly="True"
+                      Foreground="White"
+                      >
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="HorizontalContentAlignment" Value="center"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Height" Value="36"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn MinWidth="64" Header="Document Name" Binding="{Binding DocumentName, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn MinWidth="64" Header="Document Version" Binding="{Binding DocuemntVersion, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn MinWidth="64" Header="Date of revision" Binding="{Binding Date, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    
+                    <!-- falta una colum -->
+                    
+                </DataGrid.Columns>
+            </DataGrid>
+
+
+            <DataGrid Grid.Column="1" Grid.Row="1"
+                      Margin="10" ItemsSource="{Binding UserRevisionList, Mode=OneWay}"
+                      Background="#00897B"
+                      RowHeight="36"                      
+                      AutoGenerateColumns="False"
+                      HorizontalScrollBarVisibility="Visible"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserResizeColumns="False"
+                      CanUserResizeRows="False"
+                      CanUserReorderColumns="False"
+                      CanUserSortColumns="False"
+                      IsReadOnly="True"
+                      Foreground="White"
+                      >
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="HorizontalContentAlignment" Value="center"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Height" Value="36"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn MinWidth="64" Header="Document Name" Binding="{Binding DocumentName, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn MinWidth="64" Header="Document Version" Binding="{Binding DocuemntVersion, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn MinWidth="64" Header="Date of revision" Binding="{Binding Date, Mode=OneTime}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- falta una colum -->
+
+                </DataGrid.Columns>
+            </DataGrid>
+
+
+
+
+
+
+        </Grid>
+        
+    </Grid>
+    
+</ContentControl>
