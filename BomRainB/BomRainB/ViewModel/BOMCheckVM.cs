@@ -417,13 +417,29 @@ namespace BomRainB.ViewModel
             {
                 if (BomThread.IsCompleted)
                 {
+                    documentCsv.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
                     documentCsv.ShowDialog();
+                    //if () if directory Exist
                     if (!(string.IsNullOrEmpty(documentCsv.FileName)))
                         BomThread = ProcessCsvFile();
                 }
             }
             else
             {
+                //Directory.GetAccessControl(@"\\\\DESKTOP - 00DBTE3\\Documents\\$");
+                //if (Directory.Exists(@"\\\\DESKTOP - 00DBTE3\\c$"))
+                //{
+                    //documentCsv.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.NetworkShortcuts);
+                //}
+                //else
+                //{
+                    if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal))))
+                        documentCsv.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+                //}
+                if (Directory.Exists("\\\\DESKTOP-00DBTE3\\Documents\\"))
+                {
+                    documentCsv.InitialDirectory = "\\\\DESKTOP-00DBTE3\\Documents\\";
+                }
                 documentCsv.ShowDialog();
                 if (!(string.IsNullOrEmpty(documentCsv.FileName)))
                     BomThread = ProcessCsvFile();
