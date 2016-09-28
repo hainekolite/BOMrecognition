@@ -27,7 +27,7 @@ namespace BomRainB.ViewModel.Commands
         public RelayCommand(Action action, int relayIdentifier)
         {
             this.action = action;
-            if (relayIdentifier.Equals(1) && relayIdentifier != 0)
+            if (relayIdentifier.Equals(1))
                 this.canAccess = true;            
             else
                 this.canAccess = false;
@@ -36,7 +36,7 @@ namespace BomRainB.ViewModel.Commands
 
         public void updateAccess(int relayIndetifier)
         {
-            if (relayIndetifier.Equals(1) && relayIndetifier != 0)
+            if (relayIndetifier.Equals(1))
                 CanAccess = true;
             else
                 CanAccess = false;
