@@ -100,7 +100,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width=".8*"/>
+                <ColumnDefinition Width=".7*"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0"
@@ -144,7 +144,7 @@
                 </DataGrid.ColumnHeaderStyle>
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn MinWidth="64" Header="Document Name" Binding="{Binding DocumentName, Mode=OneTime}" Width="*">
+                    <DataGridTextColumn MinWidth="64" Header="Document" Binding="{Binding DocumentName, Mode=OneTime}" Width="*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -152,7 +152,7 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTextColumn MinWidth="64" Header="Version" Binding="{Binding DocuemntVersion, Mode=OneTime}" Width="*">
+                    <DataGridTextColumn MinWidth="64" Header="Version" Binding="{Binding DocuemntVersion, Mode=OneTime}" Width=".5*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -160,7 +160,7 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTextColumn MinWidth="64" Header="Date of revision" Binding="{Binding Date, Mode=OneTime}" Width="*">
+                    <DataGridTextColumn MinWidth="64" Header="Date of revision" Binding="{Binding Date, Mode=OneTime}" Width="1.5*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -168,7 +168,7 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTextColumn MinWidth="64" Header="Name" Binding="{Binding User.Name, Mode=OneTime}" Width="*">
+                    <DataGridTextColumn MinWidth="64" Header="Name" Binding="{Binding User.Name, Mode=OneTime}" Width=".8*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -176,7 +176,7 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTextColumn MinWidth="64" Header="Last Name" Binding="{Binding User.LastName, Mode=OneTime}" Width="*">
+                    <DataGridTextColumn MinWidth="64" Header="Last Name" Binding="{Binding User.LastName, Mode=OneTime}" Width="1.2*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
