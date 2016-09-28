@@ -13,7 +13,7 @@ namespace BomRainB.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201609271847103_initial"; }
+            get { return "201609280452297_initial"; }
         }
         
         string IMigrationMetadata.Source

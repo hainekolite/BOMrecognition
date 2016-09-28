@@ -297,8 +297,8 @@ namespace BomRainB.ViewModel
                                      SelectedFileCSV = documentCsv.SafeFileName;
                                      BomCSVList = BomCSVList.Skip(1).ToList();
                                      _memBomCSVList = new List<BomInterestData>(BomCSVList);
-                                     SplitReferences(_memBomCSVList);
                                      SpecialRanges(_memBomCSVList);
+                                     SplitReferences(_memBomCSVList);
                                  }
                                  else
                                  {
@@ -595,7 +595,7 @@ namespace BomRainB.ViewModel
         {
             for (int i =0; i< BOMList.Count; i++)
             {
-                if (string.IsNullOrEmpty(BOMList.ElementAt(i).componentId.Trim()) && !string.IsNullOrEmpty(BOMList.ElementAt(i).referenceDesignator.Trim()) && i > 0)
+                if (string.IsNullOrEmpty(Regex.Replace(BOMList.ElementAt(i).componentId, " ", string.Empty)) && !string.IsNullOrEmpty(Regex.Replace(BOMList.ElementAt(i).referenceDesignator, " ", string.Empty)) && i > 0)
                 {
                     if (!string.IsNullOrEmpty(BOMList.ElementAt(i - 1).componentId))
                     {

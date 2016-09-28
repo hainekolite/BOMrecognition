@@ -52,9 +52,9 @@
     <Compile Include="BomRainBirdDbContext.cs" />
     <Compile Include="Contracts\IRepository.cs" />
     <Compile Include="Contracts\IUnitOfWork.cs" />
-    <Compile Include="Migrations\201609271847103_initial.cs" />
-    <Compile Include="Migrations\201609271847103_initial.Designer.cs">
-      <DependentUpon>201609271847103_initial.cs</DependentUpon>
+    <Compile Include="Migrations\201609280452297_initial.cs" />
+    <Compile Include="Migrations\201609280452297_initial.Designer.cs">
+      <DependentUpon>201609280452297_initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -78,8 +78,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201609271847103_initial.resx">
-      <DependentUpon>201609271847103_initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201609280452297_initial.resx">
+      <DependentUpon>201609280452297_initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

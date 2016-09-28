@@ -26,19 +26,21 @@ namespace BomRainB.Data.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(nullable: false),
-                        LastName = c.String(nullable: false),
-                        AccountName = c.String(nullable: false),
-                        Password = c.String(nullable: false),
+                        Name = c.String(nullable: false, maxLength: 30),
+                        LastName = c.String(nullable: false, maxLength: 30),
+                        AccountName = c.String(nullable: false, maxLength: 30),
+                        Password = c.String(nullable: false, maxLength: 30),
                         AccountType = c.Int(nullable: false),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .Index(t => t.AccountName, unique: true, name: "Index");
             
         }
         
         public override void Down()
         {
             DropForeignKey("dbo.Revisions", "UserId", "dbo.Users");
+            DropIndex("dbo.Users", "Index");
             DropIndex("dbo.Revisions", new[] { "UserId" });
             DropTable("dbo.Users");
             DropTable("dbo.Revisions");
