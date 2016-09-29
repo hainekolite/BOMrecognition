@@ -200,7 +200,7 @@ namespace BomRainB.ViewModel
                 var query = revisionBusiness.GetRevisionByDocumentName(fileName)?.ToList();//.Last();
                 if (query != null && query.Count >= 1)
                 {
-                    if (IsRevisionVersionValid(selectedRevisionVersion, query.Last().DocuemntVersion))
+                    if (IsRevisionVersionValid(selectedRevisionVersion, query.OrderByDescending(r => r.Date).FirstOrDefault().DocumentVersion))
                     {
                         revisionBusiness.InsertRevision(this.user, fileName, selectedRevisionVersion.Trim().ToUpper());
                         MessageBox.Show(REVISION_ADDED, SUCCESS);

@@ -65,7 +65,7 @@ namespace BomRainB.ViewModel
             }
             set
             {
-                if (value.Length >= 1)
+                /*if (value.Length >= 1)
                 {
                     if (regex.IsMatch(value.ElementAt(value.Length-1).ToString()))
                     {
@@ -74,10 +74,10 @@ namespace BomRainB.ViewModel
                     }
                 }
                 else if (value.Equals(string.Empty))
-                {
+                {*/
                     _account = value;
                     OnPropertyChanged();
-                }
+                //}
             }
         }
 

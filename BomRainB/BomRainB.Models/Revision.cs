@@ -7,7 +7,7 @@ namespace BomRainB.Models
 
         public int Id { get; set; }
         public string DocumentName { get; set; }
-        public string DocuemntVersion { get; set; }
+        public string DocumentVersion { get; set; }
         public DateTime Date { get; set; }
 
         public int UserId { get; set; }

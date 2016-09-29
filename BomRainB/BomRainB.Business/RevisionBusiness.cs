@@ -33,7 +33,7 @@ namespace BomRainB.Business
             Revision rev = new Revision()
             {
                 DocumentName = documentName,
-                DocuemntVersion = revisionVersion,
+                DocumentVersion = revisionVersion,
                 Date = DateTime.Now,
                 UserId = user.Id
             };

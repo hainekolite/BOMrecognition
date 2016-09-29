@@ -3,7 +3,7 @@ namespace BomRainB.Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class initial : DbMigration
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
@@ -13,7 +13,7 @@ namespace BomRainB.Data.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         DocumentName = c.String(nullable: false),
-                        DocuemntVersion = c.String(nullable: false),
+                        DocumentVersion = c.String(nullable: false),
                         Date = c.DateTime(nullable: false),
                         UserId = c.Int(nullable: false),
                     })

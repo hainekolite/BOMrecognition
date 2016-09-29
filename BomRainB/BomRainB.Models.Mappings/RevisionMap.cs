@@ -17,7 +17,7 @@ namespace BomRainB.Models.Mappings
             this.Property(r => r.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             this.Property(r => r.Date).IsRequired();
             this.Property(r => r.DocumentName).IsRequired();
-            this.Property(r => r.DocuemntVersion).IsRequired();
+            this.Property(r => r.DocumentVersion).IsRequired();
 
             this.HasRequired(r => r.User).WithMany(r => r.Revisions).HasForeignKey(r => r.UserId);
 

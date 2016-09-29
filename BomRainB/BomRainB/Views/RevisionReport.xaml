@@ -152,7 +152,7 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTextColumn MinWidth="64" Header="Version" Binding="{Binding DocuemntVersion, Mode=OneTime}" Width=".5*">
+                    <DataGridTextColumn MinWidth="64" Header="Version" Binding="{Binding DocumentVersion, Mode=OneTime}" Width=".5*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -223,7 +223,7 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTextColumn MinWidth="64" Header="Document Version" Binding="{Binding DocuemntVersion, Mode=OneTime}" Width="*">
+                    <DataGridTextColumn MinWidth="64" Header="Document Version" Binding="{Binding DocumentVersion, Mode=OneTime}" Width="*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
