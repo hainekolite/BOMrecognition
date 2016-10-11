@@ -17,7 +17,7 @@ namespace BomRainB.Models.Mappings
             this.HasKey(u => u.Id);
             this.Property(u => u.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-            this.Property(u => u.EmployeeId).IsRequired().HasMaxLength(30);
+            this.Property(u => u.EmployeeNumber).IsRequired().HasMaxLength(30);
             this.Property(u => u.Name).IsRequired().HasMaxLength(30);
             this.Property(u => u.LastName).IsRequired().HasMaxLength(30);
             this.Property(u => u.AccountName).IsRequired().HasMaxLength(30).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new[] { new IndexAttribute(IndexAnnotation.AnnotationName) { IsUnique = true } }));

@@ -26,7 +26,7 @@ namespace BomRainB.Data.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        EmployeeId = c.String(nullable: false, maxLength: 30),
+                        EmployeeNumber = c.String(nullable: false, maxLength: 30),
                         Name = c.String(nullable: false, maxLength: 30),
                         LastName = c.String(nullable: false, maxLength: 30),
                         AccountName = c.String(nullable: false, maxLength: 30),
